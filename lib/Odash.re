@@ -15,6 +15,21 @@ let rec drop: (int, list('a)) => list('a) =
     };
   };
 
+
+let rec some: (('a) => bool, list('a)) => bool =
+  (test_func, list_to_test) => {
+    switch (list_to_test) {
+      | [] => false;
+      | [next_item, ...rest_of_list] => {
+          if (test_func(next_item)) {
+            true;
+          } else {
+            some(test_func, rest_of_list);
+          }
+        }
+    };
+  };
+
 /* let slice: (int, int, list('a)) => list('a) =
   (start_idx, end_idx, starting_list) => {
     
@@ -45,4 +60,16 @@ let chunk: (int, list('a)) => list(list('a)) =
       }, (0, 0, []));
       chunked_list;
     }
-  }
+  };
+
+let differenceBy: (('a) => 'b, list('a), list('a)) => list('a) =
+  (comparison_func, comparison_list, starting_list) => {
+    List.filter((item) => {
+      !(comparison_list |> some(comparison_item => comparison_func(comparison_item) == comparison_func(item)))
+    }, starting_list);
+  };
+
+let difference: (list('a), list('a)) => list('a) =
+  (comparison_list, starting_list) => {
+    starting_list |> differenceBy(item => item, comparison_list)
+  };
