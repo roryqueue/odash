@@ -4,6 +4,14 @@ open Lib;
 
 let suite =
   "Odash" >::: [
+    "identity returns its argument" >:: () => {
+      let a_number = 1;
+      let a_string = "hi";
+      let a_list = [1,4];
+      a_number |> Odash.identity |> assert_equal(a_number);
+      a_string |> Odash.identity |> assert_equal(a_string);
+      a_list |> Odash.identity |> assert_equal(a_list);
+    },
     "chunk splits evenly divisible list into list of lists" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
       let chunk_size = 3;

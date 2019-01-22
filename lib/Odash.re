@@ -1,6 +1,9 @@
 exception Invalid(string);
 exception Impossible(string);
 
+let identity: 'a => 'a = input => input
+
+/* TODO: add dropWhile, refactor to make this a special case of that */
 let rec drop: (int, list('a)) => list('a) =
   (count_to_drop, starting_list) => {
     switch (starting_list) {
@@ -15,6 +18,7 @@ let rec drop: (int, list('a)) => list('a) =
     }
   };
 
+/* TODO: add takeWhile, refactor to make this a special case of that */
 let rec take: (int, list('a)) => list('a) =
   (count_to_take, starting_list) => {
     if (count_to_take < 0) {
@@ -92,4 +96,4 @@ let differenceBy: ('a => 'b, list('a), list('a)) => list('a) =
 
 let difference: (list('a), list('a)) => list('a) =
   (comparison_list, starting_list) =>
-    starting_list |> differenceBy(item => item, comparison_list);
+    starting_list |> differenceBy(identity, comparison_list);
