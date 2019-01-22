@@ -3,19 +3,34 @@ exception Impossible(string);
 
 let identity: 'a => 'a = input => input
 
-/* TODO: add dropWhile, refactor to make this a special case of that */
-let rec drop: (int, list('a)) => list('a) =
-  (count_to_drop, starting_list) => {
+let dropWhile: ((list('a), int, 'a) => bool, list('a)) => list('a) =
+  (while_func, starting_list) => {
     switch (starting_list) {
-    | [] => []
-    | [_, ...list_dropping_one] as full_list => {
-        if (count_to_drop <= 0) {
-          full_list;
-        } else {
-          drop(count_to_drop - 1, list_dropping_one);
-        }
-      }
-    }
+      | [] => [];
+      | [first_item, ...rest_of_list] => {
+        let rec internal_rec_func: (list('a), int, 'a) => list('a) =
+          (rest_of_list, idx, internal_first_item) => {
+            let remaining_list = [internal_first_item, ...rest_of_list];
+            if (!while_func(starting_list, idx, internal_first_item)) {
+              remaining_list;
+            } else {
+              switch (rest_of_list) {
+                | [] => [];
+                | [next_item, ...list_dropping_one] => {
+                      internal_rec_func(list_dropping_one, idx + 1, next_item);
+                  }
+              }
+            }
+          };
+        internal_rec_func(rest_of_list, 0, first_item);
+      };
+    };
+  };
+
+let drop: (int, list('a)) => list('a) =
+  (count_to_drop, starting_list) => {
+    let drop_func = (_, idx, _) => idx < count_to_drop;
+    starting_list |> dropWhile(drop_func);
   };
 
 /* TODO: add takeWhile, refactor to make this a special case of that */
