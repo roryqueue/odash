@@ -58,12 +58,6 @@ let suite =
       let expected_output = [];
       input_list |> Odash.dropWhile(while_func) |> assert_equal(expected_output);
     },
-    "dropRightWhile applies the provided func to the last item, reverse index, and rest of list, and drops until false" >:: () => {
-      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
-      let while_func = (_, _, i) => i > 5;
-      let expected_output = [0,1,2,3,4,5];
-      input_list |> Odash.dropRightWhile(while_func) |> assert_equal(expected_output);
-    },
     "drop n returns a list with n items dropped from the beginning" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
       let drop_size = 3;
@@ -79,6 +73,12 @@ let suite =
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
       let drop_size = -99;
       input_list |> Odash.drop(drop_size) |> assert_equal(input_list);
+    },
+    "dropRightWhile applies the provided func to the last item, reverse index, and rest of list, and drops until false" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let while_func = (_, _, i) => i > 5;
+      let expected_output = [0,1,2,3,4,5];
+      input_list |> Odash.dropRightWhile(while_func) |> assert_equal(expected_output);
     },
     "dropRight n returns a list with n items dropped from the end" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
@@ -130,6 +130,18 @@ let suite =
       let take_size = -99;
       let expected_output = [];
       input_list |> Odash.take(take_size) |> assert_equal(expected_output);
+    },
+    "takeRightWhile applies the provided func to the last item, reverse index, and rest of list, and takes until false" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let while_func = (_, _, i) => i > 5;
+      let expected_output = [6,7,8,9,10,11];
+      input_list |> Odash.takeRightWhile(while_func) |> assert_equal(expected_output);
+    },
+    "takeRight n returns a list with n items taken from the end" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let take_size = 3;
+      let expected_output = [9,10,11];
+      input_list |> Odash.takeRight(take_size) |> assert_equal(expected_output);
     },
     "slice returns a sublist from start index to end index" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];

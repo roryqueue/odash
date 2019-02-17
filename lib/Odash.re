@@ -73,6 +73,16 @@ let take: (int, list('a)) => list('a) =
     starting_list |> takeWhile(take_func);
   };
 
+let takeRightWhile: ((list('a), int, 'a) => bool, list('a)) => list('a) =
+  (while_func, starting_list) => {
+    starting_list |> List.rev |> takeWhile(while_func) |> List.rev
+  };
+
+let takeRight: (int, list('a)) => list('a) =
+  (count_to_take, starting_list) => {
+    starting_list |> List.rev |> take(count_to_take) |> List.rev
+  };
+
 let slice: (int, int, list('a)) => list('a) =
   (start_idx, end_idx, starting_list) => {
     if (end_idx < 0) {
