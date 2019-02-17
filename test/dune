@@ -1,1 +1,1 @@
-(test (name test) (libraries Lib oUnit ezjsonm))
+(test (name test) (libraries Lib oUnit))
