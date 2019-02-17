@@ -58,6 +58,12 @@ let suite =
       let expected_output = [];
       input_list |> Odash.dropWhile(while_func) |> assert_equal(expected_output);
     },
+    "dropRightWhile applies the provided func to the last item, reverse index, and rest of list, and drops until false" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let while_func = (_, _, i) => i > 5;
+      let expected_output = [0,1,2,3,4,5];
+      input_list |> Odash.dropRightWhile(while_func) |> assert_equal(expected_output);
+    },
     "drop n returns a list with n items dropped from the beginning" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
       let drop_size = 3;
@@ -73,6 +79,12 @@ let suite =
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
       let drop_size = -99;
       input_list |> Odash.drop(drop_size) |> assert_equal(input_list);
+    },
+    "dropRight n returns a list with n items dropped from the end" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let drop_size = 3;
+      let expected_output = [0,1,2,3,4,5,6,7,8];
+      input_list |> Odash.dropRight(drop_size) |> assert_equal(expected_output);
     },
     "take n returns a list with n items dropped from the beginning" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];

@@ -33,6 +33,16 @@ let drop: (int, list('a)) => list('a) =
     starting_list |> dropWhile(drop_func);
   };
 
+let dropRightWhile: ((list('a), int, 'a) => bool, list('a)) => list('a) =
+  (while_func, starting_list) => {
+    starting_list |> List.rev |> dropWhile(while_func) |> List.rev
+  };
+
+let dropRight: (int, list('a)) => list('a) =
+  (count_to_drop, starting_list) => {
+    starting_list |> List.rev |> drop(count_to_drop) |> List.rev
+  };
+
 /* TODO: add takeWhile, refactor to make this a special case of that */
 let rec take: (int, list('a)) => list('a) =
   (count_to_take, starting_list) => {
