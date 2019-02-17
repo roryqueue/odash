@@ -67,22 +67,10 @@ let takeWhile: ((list('a), int, 'a) => bool, list('a)) => list('a) =
     };
   };
 
-let rec take: (int, list('a)) => list('a) =
+let take: (int, list('a)) => list('a) =
   (count_to_take, starting_list) => {
-    if (count_to_take < 0) {
-      [];
-    } else {
-      switch (starting_list) {
-        | [] => []
-        | [next_item, ...rest_of_list] => {
-            if (count_to_take == 0) {
-              [];
-            } else {
-              [next_item, ...take(count_to_take - 1, rest_of_list)];
-            }
-          }
-        }
-    }
+    let take_func = (_, idx, _) => idx < count_to_take;
+    starting_list |> takeWhile(take_func);
   };
 
 let slice: (int, int, list('a)) => list('a) =
