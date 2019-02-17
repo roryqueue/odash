@@ -52,7 +52,7 @@ let suite =
       let while_func = (_, _, _) => false;
       input_list |> Odash.dropWhile(while_func) |> assert_equal(input_list);
     },
-    "dropWhile returns empty list if provided func is false for all items" >:: () => {
+    "dropWhile returns empty list if provided func is true for all items" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
       let while_func = (_, _, _) => true;
       let expected_output = [];
@@ -85,6 +85,33 @@ let suite =
       let drop_size = 3;
       let expected_output = [0,1,2,3,4,5,6,7,8];
       input_list |> Odash.dropRight(drop_size) |> assert_equal(expected_output);
+    },
+    "takeWhile applies the provided func to the next item, index, and rest of list, and keeps until false" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let while_func = (_, _, i) => i < 5;
+      let expected_output = [0,1,2,3,4];
+      input_list |> Odash.takeWhile(while_func) |> assert_equal(expected_output);
+    },
+    "takeWhile can operate on item and full list" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,7];
+      let while_func = (list, _, next_item) => {
+        list
+        |> List.filter((i) => i == next_item)
+        |> List.length == 1;
+      };
+      let expected_output = [0,1,2,3,4,5,6];
+      input_list |> Odash.takeWhile(while_func) |> assert_equal(expected_output);
+    },
+    "takeWhile returns an empty list if provided func is false for the first item" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let while_func = (_, _, _) => false;
+      let expected_output = [];
+      input_list |> Odash.takeWhile(while_func) |> assert_equal(expected_output);
+    },
+    "takeWhile a list unaltered if provided func is true for all items" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let while_func = (_, _, _) => true;
+      input_list |> Odash.takeWhile(while_func) |> assert_equal(input_list);
     },
     "take n returns a list with n items dropped from the beginning" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];

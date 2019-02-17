@@ -43,7 +43,30 @@ let dropRight: (int, list('a)) => list('a) =
     starting_list |> List.rev |> drop(count_to_drop) |> List.rev
   };
 
-/* TODO: add takeWhile, refactor to make this a special case of that */
+let takeWhile: ((list('a), int, 'a) => bool, list('a)) => list('a) =
+  (while_func, starting_list) => {
+    switch (starting_list) {
+      | [] => [];
+      | [first_item, ...rest_of_list] => {
+        let rec internal_rec_func: (list('a), int, 'a, list('a)) => list('a) =
+          (rest_of_list, idx, internal_first_item, output_list) => {
+            if (!while_func(starting_list, idx, internal_first_item)) {
+              output_list;
+            } else {
+              let updated_output_list = [internal_first_item, ...output_list];
+              switch (rest_of_list) {
+                | [] => updated_output_list;
+                | [next_item, ...list_dropping_one] => {
+                      internal_rec_func(list_dropping_one, idx + 1, next_item, updated_output_list);
+                  }
+              }
+            }
+          };
+        internal_rec_func(rest_of_list, 0, first_item, []) |> List.rev
+      };
+    };
+  };
+
 let rec take: (int, list('a)) => list('a) =
   (count_to_take, starting_list) => {
     if (count_to_take < 0) {
