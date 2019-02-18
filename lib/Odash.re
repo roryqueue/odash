@@ -143,3 +143,28 @@ let differenceBy: ('a => 'b, list('a), list('a)) => list('a) =
 let difference: (list('a), list('a)) => list('a) =
   (comparison_list, starting_list) =>
     starting_list |> differenceBy(identity, comparison_list);
+
+let fill = (~start_index: int=0, ~end_index: option(int)=?, replacement: 'a, starting_list: list('a)) : list('a) => {
+    switch (starting_list) {
+      | [] => [];
+      | [first_item, ...list_excluding_first] => {
+        let defaulted_end_index = switch (end_index) {
+        | None => List.length(starting_list) + 1
+        | Some(idx) => idx
+        };
+        
+        let rec internal_fill: (list('a), int, 'a, list('a)) => list('a) =
+          (return_list, idx, next_item, rest_of_list) => {
+            let next_return_item = (idx >= start_index && idx < defaulted_end_index) ? replacement: next_item;
+            let updated_return_list = [next_return_item, ...return_list];
+            switch (rest_of_list) {
+              | [] => updated_return_list;
+              | [updated_next_item, ...updated_rest_of_list] => {
+                  internal_fill(updated_return_list, idx + 1, updated_next_item, updated_rest_of_list);
+                }
+            }
+          }
+        internal_fill([], 0, first_item, list_excluding_first) |> List.rev;
+      }
+    }
+  };

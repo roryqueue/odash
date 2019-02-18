@@ -247,6 +247,71 @@ let suite =
       let expected_output = [3,-7];
       starting_list |> Odash.differenceBy(comparison_func, comparison_list) |> assert_equal(expected_output);
     },
+    "fill fills in an array with the provided value" >:: () => {
+      let starting_list = ['a','b','c','d','e'];
+      let fill_character = 'f';
+      let expected_output = ['f','f','f','f','f'];
+      starting_list |> Odash.fill(fill_character) |> assert_equal(expected_output);
+    },
+    "fill can take an inclusive start index" >:: () => {
+      let starting_list = ['a','b','c','d','e'];
+      let fill_character = 'f';
+      let start_idx = 2;
+      let expected_output = ['a','b','f','f','f'];
+      starting_list |> Odash.fill(~start_index=start_idx, fill_character) |> assert_equal(expected_output);
+    },
+    "fill replaces all array values if start index is zero" >:: () => {
+      let starting_list = ['a','b','c','d','e'];
+      let fill_character = 'f';
+      let start_idx = 0;
+      let expected_output = ['f','f','f','f','f'];
+      starting_list |> Odash.fill(~start_index=start_idx, fill_character) |> assert_equal(expected_output);
+    },
+    "fill replaces all array values if start index is negative" >:: () => {
+      let starting_list = ['a','b','c','d','e'];
+      let fill_character = 'f';
+      let start_idx = -100;
+      let expected_output = ['f','f','f','f','f'];
+      starting_list |> Odash.fill(~start_index=start_idx, fill_character) |> assert_equal(expected_output);
+    },
+    "fill doesn't replace any array values if start index is greater than or equal to list size" >:: () => {
+      let starting_list = ['a','b','c','d','e'];
+      let fill_character = 'f';
+      let start_idx = 5;
+      starting_list |> Odash.fill(~start_index=start_idx, fill_character) |> assert_equal(starting_list);
+    },
+    "fill can take an exclusive end index" >:: () => {
+      let starting_list = ['a','b','c','d','e'];
+      let fill_character = 'f';
+      let end_idx = 2;
+      let expected_output = ['f','f','c','d','e'];
+      starting_list |> Odash.fill(~end_index=end_idx, fill_character) |> assert_equal(expected_output);
+    },
+    "fill doesn't replace any array values if end index is zero" >:: () => {
+      let starting_list = ['a','b','c','d','e'];
+      let fill_character = 'f';
+      let end_idx = 0;
+      starting_list |> Odash.fill(~end_index=end_idx, fill_character) |> assert_equal(starting_list);
+    },
+    "fill doesn't replace any array values if end index is negative" >:: () => {
+      let starting_list = ['a','b','c','d','e'];
+      let fill_character = 'f';
+      let end_idx = -100;
+      starting_list |> Odash.fill(~end_index=end_idx, fill_character) |> assert_equal(starting_list);
+    },
+    "fill replaces all array values if end index is greater than list size" >:: () => {
+      let starting_list = ['a','b','c','d','e'];
+      let fill_character = 'f';
+      let end_idx = 6;
+      let expected_output = ['f','f','f','f','f'];
+      starting_list |> Odash.fill(~end_index=end_idx, fill_character) |> assert_equal(expected_output);
+    },
+    "fill can take both a start and an end index together" >:: () => {
+      let starting_list = ['a','b','c','d','e'];
+      let fill_character = 'f';
+      let expected_output = ['a','b','f','f','e'];
+      starting_list |> Odash.fill(~start_index=2, ~end_index=4, fill_character) |> assert_equal(expected_output);
+    },
 ];
 
 run_test_tt_main(suite);
