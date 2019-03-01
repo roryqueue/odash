@@ -360,6 +360,30 @@ let suite =
       let expected_output = false;
       input_list |> Odash.includes(includes_func) |> assert_equal(expected_output);
     },
+    "every returns true if all elements of list meet every_func" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let every_func = (_, _, i) => i > -1;
+      let expected_output = true;
+      input_list |> Odash.every(every_func) |> assert_equal(expected_output);
+    },
+    "every returns false if only some elements of list meet every_func" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let every_func = (_, _, i) => i > 5;
+      let expected_output = false;
+      input_list |> Odash.every(every_func) |> assert_equal(expected_output);
+    },
+    "every returns false if no elements of list meet every_func" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let every_func = (_, _, i) => i > 50;
+      let expected_output = false;
+      input_list |> Odash.every(every_func) |> assert_equal(expected_output);
+    },
+    "find returns true for an empty list" >:: () => {
+      let input_list = [];
+      let every_func = (_, _, _) => true;
+      let expected_output = true;
+      input_list |> Odash.every(every_func) |> assert_equal(expected_output);
+    },
 ];
 
 run_test_tt_main(suite);

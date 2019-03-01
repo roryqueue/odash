@@ -174,7 +174,7 @@ let find: ((list('a), int, 'a) => bool, list('a)) => option('a) =
     switch (starting_list) {
       | [] => None;
       | [first_item, ...rest_of_list] => {
-        let rec internal_rec_func: (list('a), int, 'a) => option('a) =
+        let rec internal_find_func: (list('a), int, 'a) => option('a) =
           (rest_of_list, idx, internal_first_item) => {
             if (find_func(starting_list, idx, internal_first_item)) {
               Some(internal_first_item);
@@ -182,12 +182,12 @@ let find: ((list('a), int, 'a) => bool, list('a)) => option('a) =
               switch (rest_of_list) {
                 | [] => None;
                 | [next_item, ...list_dropping_one] => {
-                      internal_rec_func(list_dropping_one, idx + 1, next_item);
+                      internal_find_func(list_dropping_one, idx + 1, next_item);
                   }
               }
             }
           };
-        internal_rec_func(rest_of_list, 0, first_item);
+        internal_find_func(rest_of_list, 0, first_item);
       };
     };
   };
@@ -200,5 +200,29 @@ let includes: ((list('a), int, 'a) => bool, list('a)) => bool =
     switch(starting_list |> find(includes_func)) {
       | Some(_) => true;
       | None => false;
-    }
+    };
+  };
+
+
+let every: ((list('a), int, 'a) => bool, list('a)) => bool =
+  (every_func, starting_list) => {
+    switch (starting_list) {
+      | [] => true;
+      | [first_item, ...rest_of_list] => {
+        let rec internal_every_func: (list('a), int, 'a) => bool =
+          (rest_of_list, idx, internal_first_item) => {
+            if (every_func(starting_list, idx, internal_first_item)) {
+              switch (rest_of_list) {
+                | [] => true;
+                | [next_item, ...list_dropping_one] => {
+                      internal_every_func(list_dropping_one, idx + 1, next_item);
+                  }
+              }
+            } else {
+              false;
+            }
+          };
+        internal_every_func(rest_of_list, 0, first_item);
+      };
+    };
   };
