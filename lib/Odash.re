@@ -92,20 +92,6 @@ let slice: (int, int, list('a)) => list('a) =
     }
   }
 
-let rec some: ('a => bool, list('a)) => bool =
-  (test_func, list_to_test) => {
-    switch (list_to_test) {
-    | [] => false;
-    | [next_item, ...rest_of_list] => {
-        if (test_func(next_item)) {
-          true;
-        } else {
-          some(test_func, rest_of_list);
-        }
-      }
-    };
-  };
-
 let chunk: (int, list('a)) => list(list('a)) =
   (chunk_size, starting_list) => {
     if (chunk_size < 1) {
@@ -135,8 +121,22 @@ let chunk: (int, list('a)) => list(list('a)) =
 
 let differenceBy: ('a => 'b, list('a), list('a)) => list('a) =
   (comparison_func, comparison_list, starting_list) => {
+    let rec simpleSome: ('a => bool, list('a)) => bool =
+      (test_func, list_to_test) => {
+        switch (list_to_test) {
+        | [] => false;
+        | [next_item, ...rest_of_list] => {
+            if (test_func(next_item)) {
+              true;
+            } else {
+              simpleSome(test_func, rest_of_list);
+            }
+          }
+        };
+      };
+
     List.filter(item => {
-      !(comparison_list |> some(comparison_item => comparison_func(comparison_item) == comparison_func(item)))
+      !(comparison_list |> simpleSome(comparison_item => comparison_func(comparison_item) == comparison_func(item)))
     }, starting_list);
   };
 
@@ -203,7 +203,6 @@ let some: ((list('a), int, 'a) => bool, list('a)) => bool =
     };
   };
 
-
 let every: ((list('a), int, 'a) => bool, list('a)) => bool =
   (every_func, starting_list) => {
     switch (starting_list) {
@@ -224,5 +223,14 @@ let every: ((list('a), int, 'a) => bool, list('a)) => bool =
           };
         internal_every_func(rest_of_list, 0, first_item);
       };
+    };
+  };
+
+let includes: ('a, list('a)) => bool =
+  (element, starting_list) => {
+    let includes_func = (_, _, i) => i == element
+    switch(starting_list |> find(includes_func)) {
+      | Some(_) => true;
+      | None => false;
     };
   };

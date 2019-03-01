@@ -187,33 +187,15 @@ let suite =
       let _ = input_list |> Odash.slice(start_idx, end_idx) |> List.map(print_int);
       input_list |> Odash.slice(start_idx, end_idx) |> assert_equal(expected_output);
     },
-    "some returns true if one item meets criteria" >:: () => {
+    "some returns true if one item meets criteria function" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
-      let test_func = i => i > 10;
+      let test_func = (_, _, i) => i > 10;
       let expected_output = true;
       input_list |> Odash.some(test_func) |> assert_equal(expected_output);
     },
-    "some returns true if all items meet criteria" >:: () => {
+    "some returns true if all items meet criteria function" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
-      let test_func = i => i > -1;
-      let expected_output = true;
-      input_list |> Odash.some(test_func) |> assert_equal(expected_output);
-    },
-    "some returns false if no items meet criteria" >:: () => {
-      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
-      let test_func = i => i < 0;
-      let expected_output = false;
-      input_list |> Odash.some(test_func) |> assert_equal(expected_output);
-    },
-    "some returns false if input list is empty" >:: () => {
-      let input_list = [];
-      let test_func = _ => true;
-      let expected_output = false;
-      input_list |> Odash.some(test_func) |> assert_equal(expected_output);
-    },
-    "some returns true if one item meets criteria" >:: () => {
-      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
-      let test_func = i => i > 10;
+      let test_func = (_, _, i) => i > -1;
       let expected_output = true;
       input_list |> Odash.some(test_func) |> assert_equal(expected_output);
     },
@@ -342,6 +324,12 @@ let suite =
       let expected_output = Some(4);
       input_list |> Odash.findRight(find_func) |> assert_equal(expected_output);
     },
+    "some returns true if all elements in the list meets the some_function" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let some_func = (_, _, i) => i > -1;
+      let expected_output = true;
+      input_list |> Odash.some(some_func) |> assert_equal(expected_output);
+    },
     "some returns true if any element in the list meets the some_function" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
       let some_func = (_, _, i) => i == 5;
@@ -378,11 +366,29 @@ let suite =
       let expected_output = false;
       input_list |> Odash.every(every_func) |> assert_equal(expected_output);
     },
-    "find returns true for an empty list" >:: () => {
-      let input_list = [];
-      let every_func = (_, _, _) => true;
+    "includes returns true if element is in list once" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let element = 3;
       let expected_output = true;
-      input_list |> Odash.every(every_func) |> assert_equal(expected_output);
+      input_list |> Odash.includes(element) |> assert_equal(expected_output);
+    },
+    "includes returns true if list is composed of a bunch of specified element" >:: () => {
+      let input_list = [3,3,3,3,3,3,3];
+      let element = 3;
+      let expected_output = true;
+      input_list |> Odash.includes(element) |> assert_equal(expected_output);
+    },
+    "includes returns false if specified element is not in list" >:: () => {
+      let input_list = [0,1,2,4,5,6,7,8,9,10,11];
+      let element = 3;
+      let expected_output = false;
+      input_list |> Odash.includes(element) |> assert_equal(expected_output);
+    },
+    "includes returns false for empty list" >:: () => {
+      let input_list = [];
+      let element = 3;
+      let expected_output = false;
+      input_list |> Odash.includes(element) |> assert_equal(expected_output);
     },
 ];
 
