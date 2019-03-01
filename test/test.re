@@ -390,6 +390,30 @@ let suite =
       let expected_output = false;
       input_list |> Odash.includes(element) |> assert_equal(expected_output);
     },
+    "partition splits a list in items true and false for predicate, preserving order" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let partition_func = i => (i mod 2) == 0;
+      let expected_output = ([0,2,4,6,8,10], [1,3,5,7,9,11]);
+      input_list |> Odash.partition(partition_func) |> assert_equal(expected_output);
+    },
+    "partition puts all items in first list if partition function true for all" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let partition_func = _ => true;
+      let expected_output = ([0,1,2,3,4,5,6,7,8,9,10,11], []);
+      input_list |> Odash.partition(partition_func) |> assert_equal(expected_output);
+    },
+    "partition puts all items in second list if partition function false for all" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let partition_func = _ => false;
+      let expected_output = ([], [0,1,2,3,4,5,6,7,8,9,10,11]);
+      input_list |> Odash.partition(partition_func) |> assert_equal(expected_output);
+    },
+    "partition returns two empty lists when given and empty list" >:: () => {
+      let input_list = [];
+      let partition_func = i => i mod 2 == 0;
+      let expected_output = ([], []);
+      input_list |> Odash.partition(partition_func) |> assert_equal(expected_output);
+    },
 ];
 
 run_test_tt_main(suite);

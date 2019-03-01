@@ -121,7 +121,7 @@ let chunk: (int, list('a)) => list(list('a)) =
 
 let differenceBy: ('a => 'b, list('a), list('a)) => list('a) =
   (comparison_func, comparison_list, starting_list) => {
-    let rec simpleSome: ('a => bool, list('a)) => bool =
+    let rec simple_some: ('a => bool, list('a)) => bool =
       (test_func, list_to_test) => {
         switch (list_to_test) {
         | [] => false;
@@ -129,14 +129,14 @@ let differenceBy: ('a => 'b, list('a), list('a)) => list('a) =
             if (test_func(next_item)) {
               true;
             } else {
-              simpleSome(test_func, rest_of_list);
+              simple_some(test_func, rest_of_list);
             }
           }
         };
       };
 
     List.filter(item => {
-      !(comparison_list |> simpleSome(comparison_item => comparison_func(comparison_item) == comparison_func(item)))
+      !(comparison_list |> simple_some(comparison_item => comparison_func(comparison_item) == comparison_func(item)))
     }, starting_list);
   };
 
@@ -233,4 +233,23 @@ let includes: ('a, list('a)) => bool =
       | Some(_) => true;
       | None => false;
     };
+  };
+
+let partition: ('a => bool, list('a)) => (list('a), list('a)) =
+  (partition_func, starting_list) => {
+    let rec internal_part_func: (list('a), list('a), list('a)) => (list('a), list('a)) =
+      (list_to_test, true_list, false_list) => {
+        switch (list_to_test) {
+          | [] => (true_list, false_list);
+          | [next_item, ...rest_of_list] => {
+            let true_for_next_item = partition_func(next_item);
+            let updated_true_list = true_for_next_item ? [next_item, ...true_list] : true_list;
+            let updated_false_list = true_for_next_item ? false_list : [next_item, ...false_list];
+            internal_part_func(rest_of_list, updated_true_list, updated_false_list);
+          };
+        };
+      };
+
+    let (true_list, false_list) = internal_part_func(starting_list, [], []);
+    (List.rev(true_list), List.rev(false_list))
   };
