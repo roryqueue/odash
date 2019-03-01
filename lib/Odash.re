@@ -168,3 +168,26 @@ let fill = (~start_index: int=0, ~end_index: option(int)=?, replacement: 'a, sta
       }
     }
   };
+
+let find: ((list('a), int, 'a) => bool, list('a)) => option('a) =
+  (find_func, starting_list) => {
+    switch (starting_list) {
+      | [] => None;
+      | [first_item, ...rest_of_list] => {
+        let rec internal_rec_func: (list('a), int, 'a) => option('a) =
+          (rest_of_list, idx, internal_first_item) => {
+            if (find_func(starting_list, idx, internal_first_item)) {
+              Some(internal_first_item);
+            } else {
+              switch (rest_of_list) {
+                | [] => None;
+                | [next_item, ...list_dropping_one] => {
+                      internal_rec_func(list_dropping_one, idx + 1, next_item);
+                  }
+              }
+            }
+          };
+        internal_rec_func(rest_of_list, 0, first_item);
+      };
+    };
+  };

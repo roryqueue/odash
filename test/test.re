@@ -312,6 +312,30 @@ let suite =
       let expected_output = ['a','b','f','f','e'];
       starting_list |> Odash.fill(~start_index=2, ~end_index=4, fill_character) |> assert_equal(expected_output);
     },
+    "find returns Some of first element in a list that returns true for the find_function" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let find_func = (_, _, i) => i > 5;
+      let expected_output = Some(6);
+      input_list |> Odash.find(find_func) |> assert_equal(expected_output);
+    },
+    "find returns None for a list in which no element returns true for the find_function" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let find_func = (_, _, i) => i > 50;
+      let expected_output = None;
+      input_list |> Odash.find(find_func) |> assert_equal(expected_output);
+    },
+    "find returns Some of first element in a list if all elements return true for the find_function" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let find_func = (_, _, _) => true;
+      let expected_output = Some(0);
+      input_list |> Odash.find(find_func) |> assert_equal(expected_output);
+    },
+    "find returns None for an empty list" >:: () => {
+      let input_list = [];
+      let find_func = (_, _, _) => true;
+      let expected_output = None;
+      input_list |> Odash.find(find_func) |> assert_equal(expected_output);
+    },
 ];
 
 run_test_tt_main(suite);
