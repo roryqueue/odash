@@ -191,3 +191,14 @@ let find: ((list('a), int, 'a) => bool, list('a)) => option('a) =
       };
     };
   };
+
+let findRight: ((list('a), int, 'a) => bool, list('a)) => option('a) =
+  (find_func, starting_list) => starting_list |> List.rev |> find(find_func);
+
+let includes: ((list('a), int, 'a) => bool, list('a)) => bool =
+  (includes_func, starting_list) => {
+    switch(starting_list |> find(includes_func)) {
+      | Some(_) => true;
+      | None => false;
+    }
+  };

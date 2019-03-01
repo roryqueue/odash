@@ -336,6 +336,30 @@ let suite =
       let expected_output = None;
       input_list |> Odash.find(find_func) |> assert_equal(expected_output);
     },
+    "findLast returns Some of last element in a list that returns true for the find_function" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let find_func = (_, _, i) => i < 5;
+      let expected_output = Some(4);
+      input_list |> Odash.findRight(find_func) |> assert_equal(expected_output);
+    },
+    "includes returns true if any element in the list meets the includes_function" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let includes_func = (_, _, i) => i == 5;
+      let expected_output = true;
+      input_list |> Odash.includes(includes_func) |> assert_equal(expected_output);
+    },
+    "includes returns false for a list in which no element returns true for the includes_function" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let includes_func = (_, _, i) => i > 50;
+      let expected_output = false;
+      input_list |> Odash.includes(includes_func) |> assert_equal(expected_output);
+    },
+    "includes returns false for an empty list" >:: () => {
+      let input_list = [];
+      let includes_func = (_, _, _) => true;
+      let expected_output = false;
+      input_list |> Odash.includes(includes_func) |> assert_equal(expected_output);
+    },
 ];
 
 run_test_tt_main(suite);
