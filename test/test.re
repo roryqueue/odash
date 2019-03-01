@@ -342,23 +342,23 @@ let suite =
       let expected_output = Some(4);
       input_list |> Odash.findRight(find_func) |> assert_equal(expected_output);
     },
-    "includes returns true if any element in the list meets the includes_function" >:: () => {
+    "some returns true if any element in the list meets the some_function" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
-      let includes_func = (_, _, i) => i == 5;
+      let some_func = (_, _, i) => i == 5;
       let expected_output = true;
-      input_list |> Odash.includes(includes_func) |> assert_equal(expected_output);
+      input_list |> Odash.some(some_func) |> assert_equal(expected_output);
     },
-    "includes returns false for a list in which no element returns true for the includes_function" >:: () => {
+    "some returns false for a list in which no element returns true for the some_function" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
-      let includes_func = (_, _, i) => i > 50;
+      let some_func = (_, _, i) => i > 50;
       let expected_output = false;
-      input_list |> Odash.includes(includes_func) |> assert_equal(expected_output);
+      input_list |> Odash.some(some_func) |> assert_equal(expected_output);
     },
-    "includes returns false for an empty list" >:: () => {
+    "some returns false for an empty list" >:: () => {
       let input_list = [];
-      let includes_func = (_, _, _) => true;
+      let some_func = (_, _, _) => true;
       let expected_output = false;
-      input_list |> Odash.includes(includes_func) |> assert_equal(expected_output);
+      input_list |> Odash.some(some_func) |> assert_equal(expected_output);
     },
     "every returns true if all elements of list meet every_func" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
