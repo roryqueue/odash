@@ -29,7 +29,7 @@ let suite =
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
       let chunk_size = -3;
       let expected_exception = Odash.Invalid("chunk_size must be a positive integer!");
-      input_list |> Odash.chunk(chunk_size)  |> assert_raises(expected_exception);
+      input_list |> Odash.chunk(chunk_size) |> assert_raises(expected_exception);
     }, */
     "dropWhile applies the provided func to the next item, index, and rest of list, and drops until false" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
@@ -414,6 +414,44 @@ let suite =
       let expected_output = ([], []);
       input_list |> Odash.partition(partition_func) |> assert_equal(expected_output);
     },
+    "sampleSize returns a random sample of the specified size from the list" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let sample_size = 4;
+      let sample = input_list |> Odash.sampleSize(sample_size)
+      let _length_assertion = sample |> List.length |> assert_equal(sample_size);
+      let all_include = (i) => Odash.includes(i, input_list) |> assert_equal(true)
+      let _inclusion_assertion = sample |> List.map(all_include);
+    },
+    "sampleSize returns a shuffled list if the specified size is greater than the list size" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let sample_size = 100;
+      let sample = input_list |> Odash.sampleSize(sample_size)
+      let _length_assertion = sample |> List.length |> assert_equal(List.length(input_list));
+      let all_include = (i) => Odash.includes(i, input_list) |> assert_equal(true)
+      let _inclusion_assertion = sample |> List.map(all_include);
+    },
+    "sampleSize returns an empty list if given an empty list" >:: () => {
+      let input_list = [];
+      let sample_size = 1;
+      input_list |> Odash.sampleSize(sample_size) |> assert_equal(input_list);
+    },
+    "sampleSize returns an empty list sample size specified as zero" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let sample_size = 0;
+      let expected_output = [];
+      input_list |> Odash.sampleSize(sample_size) |> assert_equal(expected_output);
+    },
+    "sample returns a random item from a list" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let sample = Odash.sample(input_list)
+      input_list |> Odash.includes(sample) |> assert_equal(true);
+    },
+    /* TODO: figure out why this doesn't type check
+    "sample raises invalid if passed an empty list" >:: () => {
+      let input_list = [];
+      let expected_exception = "input_list cannot be empty!";
+      Odash.sample(input_list) |> assert_raises(expected_exception);
+    }, */
 ];
 
 run_test_tt_main(suite);

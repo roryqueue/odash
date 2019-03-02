@@ -253,3 +253,48 @@ let partition: ('a => bool, list('a)) => (list('a), list('a)) =
     let (true_list, false_list) = internal_part_func(starting_list, [], []);
     (List.rev(true_list), List.rev(false_list))
   };
+
+let sampleSize: (int, list('a)) => list('a) =
+  (sample_size, input_list) => {
+    let input_list_size = List.length(input_list);
+
+    let rec find_random_indices: (list(int)) => list(int) =
+      (current_idx_list) => {
+        let current_length = List.length(current_idx_list);
+        if ((current_length == sample_size) || (current_length == input_list_size)) {
+          current_idx_list;
+        } else {
+          let next_idx = Random.int(input_list_size);
+          if (includes(next_idx, current_idx_list)) {
+            find_random_indices(current_idx_list)
+          } else {
+            find_random_indices([next_idx, ...current_idx_list])
+          }
+        }
+      };
+
+    let random_indices = find_random_indices([]);
+
+    let (elements_with_index_list, _) = input_list
+      |> List.fold_left(((pairs, idx), next_item) => {
+        if (includes(next_item, random_indices)) {
+          ([(next_item, idx), ...pairs], idx + 1);
+        } else {
+          (pairs, idx + 1);
+        }
+      }, ([], 0));
+
+    elements_with_index_list
+      |> List.fast_sort(((_current_item, current_item_idx), (_next_item, next_item_idx)) => {
+        current_item_idx - next_item_idx;
+      })
+      |> List.map(((item, _idx)) => item);
+  };
+
+
+let sample: list('a) => 'a = input_list => {
+    if (List.length(input_list) < 1) {
+      raise(Invalid("input_list cannot be empty!"));
+    };
+    input_list |> sampleSize(1) |> List.hd;
+  };
