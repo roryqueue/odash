@@ -3,6 +3,26 @@ exception Impossible(string);
 
 let identity: 'a => 'a = input => input
 
+let map: ((list('a), int, 'a) => 'b, list('a)) => list('b) =
+  (map_func, starting_list) => {
+    switch (starting_list) {
+      | [] => [];
+      | [first_item, ...rest_of_list] => {
+        let rec internal_rec_func: (list('a), int, 'a, list('b)) => list('b) =
+          (input_list, idx, internal_first_item, output_list) => {
+            let updated_output_list = [map_func(starting_list, idx, internal_first_item), ...output_list]
+            switch (input_list) {
+              | [] => updated_output_list;
+              | [next_item, ...list_dropping_one] => {
+                    internal_rec_func(list_dropping_one, idx + 1, next_item, updated_output_list);
+                }
+            }
+          };
+        internal_rec_func(rest_of_list, 0, first_item, []) |> List.rev;
+      };
+    };
+  };
+
 let dropWhile: ((list('a), int, 'a) => bool, list('a)) => list('a) =
   (while_func, starting_list) => {
     switch (starting_list) {

@@ -4,6 +4,29 @@ open Lib;
 
 let suite =
   "Odash" >::: [
+    "map applies a function to each member of a list" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let map_func = (_, _, i) => i + 1;
+      let expected_output = [1,2,3,4,5,6,7,8,9,10,11,12];
+      input_list |> Odash.map(map_func) |> assert_equal(expected_output);
+    },
+    "map can apply a function using starting list passed as first argument to map_func" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let map_func = (l, _, i) => Odash.includes(i + 5, l) ? i + 5 : i;
+      let expected_output = [5,6,7,8,9,10,11,7,8,9,10,11];
+      input_list |> Odash.map(map_func) |> assert_equal(expected_output);
+    },
+    "map can apply a function using item index passed as second argument to map_func" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let map_func = (_, idx, item) => idx + item;
+      let expected_output = [0,2,4,6,8,10,12,14,16,18,20,22];
+      input_list |> Odash.map(map_func) |> assert_equal(expected_output);
+    },
+    "map passes through an empty list unchanged" >:: () => {
+      let input_list = [];
+      let map_func = (_, idx, item) => idx + item;
+      input_list |> Odash.map(map_func) |> assert_equal(input_list);
+    },
     "identity returns its argument" >:: () => {
       let a_number = 1;
       let a_string = "hi";
@@ -176,7 +199,6 @@ let suite =
       let start_idx = -7;
       let end_idx = -2;
       let expected_output = [];
-      let _ = input_list |> Odash.slice(start_idx, end_idx) |> List.map(print_int);
       input_list |> Odash.slice(start_idx, end_idx) |> assert_equal(expected_output);
     },
     "slice with a negative end index but positive start indexreturns an empty list" >:: () => {
@@ -184,7 +206,6 @@ let suite =
       let start_idx = 7;
       let end_idx = -2;
       let expected_output = [];
-      let _ = input_list |> Odash.slice(start_idx, end_idx) |> List.map(print_int);
       input_list |> Odash.slice(start_idx, end_idx) |> assert_equal(expected_output);
     },
     "some returns true if one item meets criteria function" >:: () => {
