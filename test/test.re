@@ -1,6 +1,11 @@
 open OUnit;
 open Lib;
 
+type dog = {
+  name: string,
+  weight: int
+};
+
 let suite =
   "Odash" >::: [
     "map applies a function to each member of a list" >:: () => {
@@ -520,6 +525,30 @@ let suite =
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
       let expected_output = 12;
       input_list |> Odash.size |> assert_equal(expected_output);
+    },
+    "simpleSortBy sorts items in ascending order after they are passed through sort_func" >:: () => {
+      let input_list = [0,1,9,7,9,5];
+      let expected_output = [0,1,5,7,9,9]
+      input_list |> Odash.simpleSortBy(Odash.identity) |> assert_equal(expected_output);
+    },
+    "sortBy sorts items by multiple sort_funcs" >:: () => {
+      let reilly: dog = { name: "Reilly", weight: 14 };
+      let sammy: dog = { name: "Sammy", weight: 12 };
+      let abby: dog = { name: "Abby", weight: 12 };
+
+      let input_list = [reilly, sammy, abby];
+      let first_sort: (dog => int) = (d) => d.weight;
+      let second_sort: (dog => int) = (d) => String.length(d.name);
+      let expected_output = [abby, sammy, reilly];
+      input_list |> Odash.sortBy([first_sort, second_sort]) |> assert_equal(expected_output);
+    },
+    "sortBy returns list as-is when not passed any sort_funcs" >:: () => {
+      let reilly: dog = { name: "Reilly", weight: 14 };
+      let sammy: dog = { name: "Sammy", weight: 12 };
+      let abby: dog = { name: "Abby", weight: 12 };
+
+      let input_list = [reilly, sammy, abby];
+      input_list |> Odash.sortBy([]) |> assert_equal(input_list);
     },
     /* TODO: figure out why this doesn't type check
     "sample raises invalid if passed an empty list" >:: () => {

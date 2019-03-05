@@ -1,7 +1,7 @@
 exception Invalid(string);
 exception Impossible(string);
 
-let identity: 'a => 'a = input => input
+let identity: 'a => 'a = input => input;
 
 let map: ((list('a), int, 'a) => 'b, list('a)) => list('b) =
   (map_func, starting_list) => {
@@ -354,3 +354,31 @@ let sample: list('a) => 'a = input_list => {
   };
 
 let size = List.length;
+
+let simpleSortBy: ('a => int, list('a)) => list('a) =
+  (sort_func, starting_list) => {
+    let comparison_func = (current_item, next_item) => sort_func(current_item) - sort_func(next_item);
+    starting_list |> List.stable_sort(comparison_func)
+  }
+
+let sortBy: (list('a => int), list('a)) => list('a) =
+  (sort_funcs, starting_list) => {
+    switch (sort_funcs) {
+      | [] => starting_list;
+      | [first_sort_func, ...rest_of_sort_funcs] => {
+
+        let rec internal_sort_func: (list('a => int), list('a), 'a => int) => list('a) =
+          (remaining_sort_funcs, current_list, next_sort_func) => {
+            let sorted_list = simpleSortBy(next_sort_func, current_list)
+            switch (remaining_sort_funcs) {
+              | [] => sorted_list;
+              | [new_next_sort_func, ...new_remaining_sort_funcs] => {
+                  internal_sort_func(new_remaining_sort_funcs, sorted_list, new_next_sort_func);
+                }
+            }
+          };
+
+        internal_sort_func(rest_of_sort_funcs, starting_list, first_sort_func);
+      };
+    };
+  };
