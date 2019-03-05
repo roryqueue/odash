@@ -362,7 +362,38 @@ let suite =
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
       let find_func = (_, _, i) => i < 5;
       let expected_output = Some(4);
-      input_list |> Odash.findRight(find_func) |> assert_equal(expected_output);
+      input_list |> Odash.findLast(find_func) |> assert_equal(expected_output);
+    },
+    "findIndex returns Some of first element in a list that returns true for the find_function" >:: () => {
+      let input_list = [10,11,12,13,14,15,16,17,18,19,20,21];
+      let find_func = (_, _, i) => i > 15;
+      let expected_output = 6;
+      input_list |> Odash.findIndex(find_func) |> assert_equal(expected_output);
+    },
+    "findIndex returns -1 for a list in which no element returns true for the find_function" >:: () => {
+      let input_list = [10,11,12,13,14,15,16,17,18,19,20,21];
+      let find_func = (_, _, i) => i > 50;
+      let expected_output = -1;
+      input_list |> Odash.findIndex(find_func) |> assert_equal(expected_output);
+    },
+    "findIndex returns 0 if all elements return true for the find_function" >:: () => {
+      let input_list = [10,11,12,13,14,15,16,17,18,19,20,21];
+      let find_func = (_, _, _) => true;
+      let expected_output = 0;
+      input_list |> Odash.findIndex(find_func) |> assert_equal(expected_output);
+    },
+    "findIndex returns -1 for an empty list" >:: () => {
+      let input_list = [];
+      let find_func = (_, _, _) => true;
+      let expected_output = -1;
+      input_list |> Odash.findIndex(find_func) |> assert_equal(expected_output);
+    },
+    "findLastIndex returns index of last element in a list that returns true for the find_function" >:: () => {
+      let input_list = [10,11,12,13,14,15,16,17,18,19,20,21];
+      let find_func = (_, _, i) => i < 15;
+      let expected_output = 4;
+      let _ = input_list |> Odash.findLastIndex(find_func) |> print_int
+      input_list |> Odash.findLastIndex(find_func) |> assert_equal(expected_output);
     },
     "some returns true if all elements in the list meets the some_function" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];

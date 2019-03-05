@@ -217,8 +217,37 @@ let find: ((list('a), int, 'a) => bool, list('a)) => option('a) =
     };
   };
 
-let findRight: ((list('a), int, 'a) => bool, list('a)) => option('a) =
+let findLast: ((list('a), int, 'a) => bool, list('a)) => option('a) =
   (find_func, starting_list) => starting_list |> List.rev |> find(find_func);
+
+let findIndex: ((list('a), int, 'a) => bool, list('a)) => int =
+  (find_func, starting_list) => {
+    switch (starting_list) {
+      | [] => -1;
+      | [first_item, ...rest_of_list] => {
+        let rec internal_find_func: (list('a), int, 'a) => int =
+          (rest_of_list, idx, internal_first_item) => {
+            if (find_func(starting_list, idx, internal_first_item)) {
+              idx;
+            } else {
+              switch (rest_of_list) {
+                | [] => -1;
+                | [next_item, ...list_dropping_one] => {
+                      internal_find_func(list_dropping_one, idx + 1, next_item);
+                  }
+              }
+            }
+          };
+        internal_find_func(rest_of_list, 0, first_item);
+      };
+    };
+  };
+
+let findLastIndex: ((list('a), int, 'a) => bool, list('a)) => int =
+  (find_func, starting_list) => {
+    let reverse_index = starting_list |> List.rev |> findIndex(find_func);
+    (List.length(starting_list) - 1) - reverse_index;
+  };
 
 let some: ((list('a), int, 'a) => bool, list('a)) => bool =
   (some_func, starting_list) => {
