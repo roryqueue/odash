@@ -1,7 +1,6 @@
 open OUnit;
 open Lib;
 
-
 let suite =
   "Odash" >::: [
     "map applies a function to each member of a list" >:: () => {
@@ -26,6 +25,26 @@ let suite =
       let input_list = [];
       let map_func = (_, idx, item) => idx + item;
       input_list |> Odash.map(map_func) |> assert_equal(input_list);
+    },
+    "flatten flattens a list of lists (by one level of depth)" >:: () => {
+      let input_list = [[0,1],[2],[3],[4,5],[6,7,8,9],[10,11]];
+      let expected_output = [0,1,2,3,4,5,6,7,8,9,10,11];
+      input_list |> Odash.flatten |> assert_equal(expected_output);
+    },
+    "flatten passes through an empty list unchanged" >:: () => {
+      let input_list = [];
+      input_list |> Odash.flatten |> assert_equal(input_list);
+    },
+    "flatMap applies a function then flattens the results" >:: () => {
+      let input_list = [0,1,2,3,4];
+      let map_func = (_, idx, item) => [idx, item];
+      let expected_output = [0,0,1,1,2,2,3,3,4,4];
+      input_list |> Odash.flatMap(map_func) |> assert_equal(expected_output);
+    },
+    "flatMap passes through an empty list unchanged" >:: () => {
+      let input_list = [];
+      let map_func = (_, idx, item) => [idx, item];
+      input_list |> Odash.flatMap(map_func) |> assert_equal(input_list);
     },
     "identity returns its argument" >:: () => {
       let a_number = 1;

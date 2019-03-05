@@ -23,6 +23,11 @@ let map: ((list('a), int, 'a) => 'b, list('a)) => list('b) =
     };
   };
 
+let flatten = List.flatten;
+
+let flatMap: ((list('a), int, 'a) => list('b), list('a)) => list('b) =
+  (map_func, starting_list) => starting_list |> map(map_func) |> flatten;
+
 let dropWhile: ((list('a), int, 'a) => bool, list('a)) => list('a) =
   (while_func, starting_list) => {
     switch (starting_list) {
