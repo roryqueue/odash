@@ -83,7 +83,7 @@ let suite =
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,3];
       let while_func = (list, _, next_item) => {
         list
-        |> List.filter((i) => i == next_item)
+        |> List.filter(i => i == next_item)
         |> List.length == 1;
       };
       let expected_output = [3,4,5,6,7,8,9,10,3];
@@ -392,7 +392,6 @@ let suite =
       let input_list = [10,11,12,13,14,15,16,17,18,19,20,21];
       let find_func = (_, _, i) => i < 15;
       let expected_output = 4;
-      let _ = input_list |> Odash.findLastIndex(find_func) |> print_int
       input_list |> Odash.findLastIndex(find_func) |> assert_equal(expected_output);
     },
     "some returns true if all elements in the list meets the some_function" >:: () => {
@@ -516,6 +515,11 @@ let suite =
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
       let sample = Odash.sample(input_list)
       input_list |> Odash.includes(sample) |> assert_equal(true);
+    },
+    "size returns list length" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let expected_output = 12;
+      input_list |> Odash.size |> assert_equal(expected_output);
     },
     /* TODO: figure out why this doesn't type check
     "sample raises invalid if passed an empty list" >:: () => {

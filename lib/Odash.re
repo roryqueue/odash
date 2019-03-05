@@ -352,3 +352,5 @@ let sample: list('a) => 'a = input_list => {
     };
     input_list |> sampleSize(1) |> List.hd;
   };
+
+let size = List.length;
