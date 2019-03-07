@@ -263,27 +263,8 @@ let some: ((list('a), int, 'a) => bool, list('a)) => bool =
   };
 
 let every: ((list('a), int, 'a) => bool, list('a)) => bool =
-  (every_func, starting_list) => {
-    switch (starting_list) {
-      | [] => true;
-      | [first_item, ...rest_of_list] => {
-        let rec internal_every_func: (list('a), int, 'a) => bool =
-          (rest_of_list, idx, internal_first_item) => {
-            if (every_func(starting_list, idx, internal_first_item)) {
-              switch (rest_of_list) {
-                | [] => true;
-                | [next_item, ...list_dropping_one] => {
-                      internal_every_func(list_dropping_one, idx + 1, next_item);
-                  }
-              }
-            } else {
-              false;
-            }
-          };
-        internal_every_func(rest_of_list, 0, first_item);
-      };
-    };
-  };
+  (every_func, starting_list) =>
+    starting_list |> reduce((l, idx, item, acc) => every_func(l, idx, item) ? acc : false, true);
 
 let includes: ('a, list('a)) => bool =
   (element, starting_list) => {
@@ -368,7 +349,7 @@ let simpleSortBy: ('a => int, list('a)) => list('a) =
 
 let sortBy: (list('a => int), list('a)) => list('a) =
   (sort_funcs, starting_list) => {
-    let lists_by_desc_pref = List.rev(sort_funcs)
+    let lists_by_desc_pref = List.rev(sort_funcs);
     switch (lists_by_desc_pref) {
       | [] => starting_list;
       | [first_sort_func, ...rest_of_sort_funcs] => {
