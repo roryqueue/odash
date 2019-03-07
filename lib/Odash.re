@@ -5,25 +5,28 @@ type sortOrder = Asc | Desc;
 
 let identity: 'a => 'a = input => input;
 
-let map: ((list('a), int, 'a) => 'b, list('a)) => list('b) =
-  (map_func, starting_list) => {
+let reduce: ((list('a), int, 'a, 'b) => 'b, 'b, list('a)) => 'b =
+  (fold_func, starting_accumulator, starting_list) => {
     switch (starting_list) {
-      | [] => [];
+      | [] => starting_accumulator;
       | [first_item, ...rest_of_list] => {
-        let rec internal_rec_func: (list('a), int, 'a, list('b)) => list('b) =
-          (input_list, idx, internal_first_item, output_list) => {
-            let updated_output_list = [map_func(starting_list, idx, internal_first_item), ...output_list]
+        let rec internal_fold_func: (list('a), int, 'a, 'b) => 'b =
+          (input_list, idx, internal_first_item, output) => {
+            let new_output = fold_func(starting_list, idx, internal_first_item, output);
             switch (input_list) {
-              | [] => updated_output_list;
-              | [next_item, ...list_dropping_one] => {
-                    internal_rec_func(list_dropping_one, idx + 1, next_item, updated_output_list);
-                }
+              | [] => new_output;
+              | [next_item, ...list_dropping_one] =>
+                  internal_fold_func(list_dropping_one, idx + 1, next_item, new_output);
             }
           };
-        internal_rec_func(rest_of_list, 0, first_item, []) |> List.rev;
+        internal_fold_func(rest_of_list, 0, first_item, starting_accumulator);
       };
     };
   };
+
+let map: ((list('a), int, 'a) => 'b, list('a)) => list('b) =
+  (map_func, starting_list) =>
+    starting_list |> reduce((l, idx, item, acc) => [map_func(l, idx, item), ...acc], []) |> List.rev;
 
 let flatten = List.flatten;
 

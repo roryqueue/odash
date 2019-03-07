@@ -8,6 +8,35 @@ type dog = {
 
 let suite =
   "Odash" >::: [
+    "reduce applies a function to each member of a list and an accumulator" >:: () => {
+      let input_list = [1,2,3,4];
+      let fold_func = (_, _, i, acc) => i + acc;
+      let accumulator = 0;
+      let expected_output = accumulator + 1 + 2 + 3 + 4;
+      input_list |> Odash.reduce(fold_func, accumulator) |> assert_equal(expected_output);
+    },
+    "map can apply a function using starting list passed as first argument to map_func" >:: () => {
+      let input_list = [1,2,3,4];
+      let fold_func = (l, _, i, acc) => List.hd(l) + i + acc;
+      let accumulator = 0;
+      /* adds each element itself _and_ the first element for each */
+      let expected_output = accumulator + 1 + 1 + 1 + 2 + 1 + 3 + 1 + 4;
+      input_list |> Odash.reduce(fold_func, accumulator) |> assert_equal(expected_output);
+    },
+    "reduce can apply a function using item index passed as second argument to map_func" >:: () => {
+      let input_list = [1,2,3,4];
+      let fold_func = (_, idx, item, acc) => idx + item + acc;
+      let accumulator = 0;
+      /* adds each element itself _and_ the element's index for each */
+      let expected_output = accumulator + 0 + 1 + 1 + 2 + 2 + 3 + 3 + 4;
+      input_list |> Odash.reduce(fold_func, accumulator) |> assert_equal(expected_output);
+    },
+    "reduce returns the accumulator for an empty list" >:: () => {
+      let input_list = [];
+      let fold_func = (_, _, item, acc) => String.length(item) + acc;
+      let accumulator = 0;
+      input_list |> Odash.reduce(fold_func, accumulator) |> assert_equal(accumulator);
+    },
     "map applies a function to each member of a list" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
       let map_func = (_, _, i) => i + 1;
