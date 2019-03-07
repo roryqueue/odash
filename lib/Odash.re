@@ -1,6 +1,8 @@
 exception Invalid(string);
 exception Impossible(string);
 
+type sortOrder = Asc | Desc;
+
 let identity: 'a => 'a = input => input;
 
 let map: ((list('a), int, 'a) => 'b, list('a)) => list('b) =
@@ -363,7 +365,8 @@ let simpleSortBy: ('a => int, list('a)) => list('a) =
 
 let sortBy: (list('a => int), list('a)) => list('a) =
   (sort_funcs, starting_list) => {
-    switch (sort_funcs) {
+    let lists_by_desc_pref = List.rev(sort_funcs)
+    switch (lists_by_desc_pref) {
       | [] => starting_list;
       | [first_sort_func, ...rest_of_sort_funcs] => {
 
@@ -379,6 +382,46 @@ let sortBy: (list('a => int), list('a)) => list('a) =
           };
 
         internal_sort_func(rest_of_sort_funcs, starting_list, first_sort_func);
+      };
+    };
+  };
+
+let orderBy: (list('a => int), list(sortOrder), list('a)) => list('a) =
+  (sort_funcs, sort_orders, starting_list) => {
+    let lists_by_desc_pref = List.rev(sort_funcs);
+    let orders_by_desc_pref = List.rev(sort_orders);
+
+    let get_next_sort_order: list(sortOrder) => (sortOrder, list(sortOrder)) =
+      sort_orders => {
+        switch (sort_orders) {
+          | [] => (Asc, []);
+          | [head_sort_order, ...other_sort_orders] => (head_sort_order, other_sort_orders);
+        };
+      };
+
+    switch (lists_by_desc_pref) {
+      | [] => starting_list;
+      | [first_sort_func, ...rest_of_sort_funcs] => {
+
+        let rec internal_sort_func: (list('a => int), list(sortOrder), list('a), 'a => int, sortOrder) => list('a) =
+          (remaining_sort_funcs, remaining_sort_orders, current_list, next_sort_func, next_sort_order) => {
+            let sorted_list = if (next_sort_order == Asc) {
+              simpleSortBy(next_sort_func, current_list);
+            } else {
+              let desc_sort_func = i => next_sort_func(i) * -1;
+              simpleSortBy(desc_sort_func, current_list);
+            }
+            switch (remaining_sort_funcs) {
+              | [] => sorted_list;
+              | [new_next_sort_func, ...new_remaining_sort_funcs] => {
+                  let (new_next_sort_order, new_remaining_sort_orders) = get_next_sort_order(remaining_sort_orders)
+                  internal_sort_func(new_remaining_sort_funcs, new_remaining_sort_orders, sorted_list, new_next_sort_func, new_next_sort_order);
+                }
+            }
+          };
+
+        let (first_sort_order, rest_of_sort_orders) = get_next_sort_order(orders_by_desc_pref);
+        internal_sort_func(rest_of_sort_funcs, rest_of_sort_orders, starting_list, first_sort_func, first_sort_order);
       };
     };
   };

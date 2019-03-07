@@ -532,23 +532,59 @@ let suite =
       input_list |> Odash.simpleSortBy(Odash.identity) |> assert_equal(expected_output);
     },
     "sortBy sorts items by multiple sort_funcs" >:: () => {
-      let reilly: dog = { name: "Reilly", weight: 14 };
-      let sammy: dog = { name: "Sammy", weight: 12 };
+      let sammy: dog = { name: "Sammy", weight: 14 };
+      let reilly: dog = { name: "Reilly", weight: 12 };
       let abby: dog = { name: "Abby", weight: 12 };
 
       let input_list = [reilly, sammy, abby];
       let first_sort: (dog => int) = (d) => d.weight;
       let second_sort: (dog => int) = (d) => String.length(d.name);
-      let expected_output = [abby, sammy, reilly];
+      let expected_output = [abby, reilly, sammy];
       input_list |> Odash.sortBy([first_sort, second_sort]) |> assert_equal(expected_output);
     },
     "sortBy returns list as-is when not passed any sort_funcs" >:: () => {
-      let reilly: dog = { name: "Reilly", weight: 14 };
-      let sammy: dog = { name: "Sammy", weight: 12 };
+      let sammy: dog = { name: "Sammy", weight: 14 };
+      let reilly: dog = { name: "Reilly", weight: 12 };
       let abby: dog = { name: "Abby", weight: 12 };
 
       let input_list = [reilly, sammy, abby];
       input_list |> Odash.sortBy([]) |> assert_equal(input_list);
+    },
+    "orderBy sorts items by multiple sort_funcs in ascending order when no sort_orders are passed" >:: () => {
+      let sammy: dog = { name: "Sammy", weight: 14 };
+      let reilly: dog = { name: "Reilly", weight: 12 };
+      let abby: dog = { name: "Abby", weight: 12 };
+
+      let input_list = [reilly, sammy, abby];
+      let first_sort: (dog => int) = (d) => d.weight;
+      let second_sort: (dog => int) = (d) => String.length(d.name);
+      let function_list = [first_sort, second_sort];
+      let order_list = [];
+      let expected_output = [abby, reilly, sammy];
+      input_list |> Odash.orderBy(function_list, order_list) |> assert_equal(expected_output);
+    },
+    "orderBy returns list as-is when not passed any sort_funcs" >:: () => {
+      let sammy: dog = { name: "Sammy", weight: 14 };
+      let reilly: dog = { name: "Reilly", weight: 12 };
+      let abby: dog = { name: "Abby", weight: 12 };
+
+      let input_list = [reilly, sammy, abby];
+      let function_list = [];
+      let order_list = [Odash.Desc, Odash.Asc, Odash.Desc];
+      input_list |> Odash.orderBy(function_list, order_list) |> assert_equal(input_list);
+    },
+    "orderBy sorts items by multiple sort_funcs and sort_orders when passed" >:: () => {
+      let sammy: dog = { name: "Sammy", weight: 14 };
+      let reilly: dog = { name: "Reilly", weight: 12 };
+      let abby: dog = { name: "Abby", weight: 12 };
+
+      let input_list = [reilly, sammy, abby];
+      let first_sort: (dog => int) = (d) => d.weight;
+      let second_sort: (dog => int) = (d) => String.length(d.name);
+      let function_list = [first_sort, second_sort];
+      let order_list = [Odash.Desc, Odash.Asc];
+      let expected_output = [sammy, abby, reilly];
+      input_list |> Odash.orderBy(function_list, order_list) |> assert_equal(expected_output);
     },
     /* TODO: figure out why this doesn't type check
     "sample raises invalid if passed an empty list" >:: () => {
