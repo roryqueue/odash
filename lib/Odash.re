@@ -57,6 +57,12 @@ let forEach: ((list('a), int, 'a) => bool, list('a)) => list('a) =
     };
   };
 
+let forEachRight: ((list('a), int, 'a) => bool, list('a)) => list('a) =
+  (each_func, starting_list) => {
+    let _reversed_list = starting_list |> List.rev |> forEach(each_func);
+    starting_list;
+  };
+
 let dropWhile: ((list('a), int, 'a) => bool, list('a)) => list('a) =
   (while_func, starting_list) => {
     switch (starting_list) {

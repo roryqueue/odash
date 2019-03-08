@@ -128,6 +128,17 @@ let suite =
       let _ = input_list |> Odash.forEach(each_func) |> assert_equal(input_list);
       assert_equal(array_to_mutate, expected_mutated_array)
     },
+    "forEach runs a function for its side effect in reverse order and with inverse index, then returns the initial list unchanged" >:: () => {
+      let input_list = ['a','b','c','d'];
+      let array_to_mutate = [|'b','b','b','b'|];
+      let each_func = (_, idx, item) => {
+        let _ = Array.set(array_to_mutate, idx, item);
+        true;
+      };
+      let expected_mutated_array = [|'d','c','b','a'|];
+      let _ = input_list |> Odash.forEachRight(each_func) |> assert_equal(input_list);
+      assert_equal(array_to_mutate, expected_mutated_array)
+    },
     "identity returns its argument" >:: () => {
       let a_number = 1;
       let a_string = "hi";
