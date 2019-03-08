@@ -113,6 +113,10 @@ let suite =
       let input_list = [];
       input_list |> Odash.flatten |> assert_equal(input_list);
     },
+    "concat aliases flatten" >:: () => {
+      let input_list = [[0,1],[2],[3],[4,5],[6,7,8,9],[10,11]];
+      input_list |> Odash.concat |> assert_equal(Odash.flatten(input_list));
+    },
     "flatMap applies a function then flattens the results" >:: () => {
       let input_list = [0,1,2,3,4];
       let map_func = (_, idx, item) => [idx, item];
@@ -134,6 +138,25 @@ let suite =
       let expected_mutated_array = [|'a','b','c','d'|];
       let _ = input_list |> Odash.forEach(each_func) |> assert_equal(input_list);
       assert_equal(array_to_mutate, expected_mutated_array)
+    },
+    "each aliases forEach" >:: () => {
+      let for_each_input_list = ['a','b','c','d'];
+      let for_each_array_to_mutate = [|'b','b','b','b'|];
+      let for_each_func = (_, idx, item) => {
+        let _ = Array.set(for_each_array_to_mutate, idx, item);
+        true;
+      };
+
+      let each_input_list = ['a','b','c','d'];
+      let each_array_to_mutate = [|'b','b','b','b'|];
+      let each_func = (_, idx, item) => {
+        let _ = Array.set(each_array_to_mutate, idx, item);
+        true;
+      };
+
+      let _ = for_each_input_list |> Odash.forEach(for_each_func) |> assert_equal(for_each_input_list);
+      let _ = each_input_list |> Odash.each(each_func) |> assert_equal(each_input_list);
+      assert_equal(for_each_array_to_mutate, each_array_to_mutate)
     },
     "forEach exits early if the each_func returns false" >:: () => {
       let input_list = ['a','b','c','d'];
@@ -172,7 +195,7 @@ let suite =
       let _ = input_list |> Odash.forEach(each_func) |> assert_equal(input_list);
       assert_equal(array_to_mutate, expected_mutated_array)
     },
-    "forEach runs a function for its side effect in reverse order and with inverse index, then returns the initial list unchanged" >:: () => {
+    "forEachRight runs a function for its side effect in reverse order and with inverse index, then returns the initial list unchanged" >:: () => {
       let input_list = ['a','b','c','d'];
       let array_to_mutate = [|'b','b','b','b'|];
       let each_func = (_, idx, item) => {
@@ -182,6 +205,25 @@ let suite =
       let expected_mutated_array = [|'d','c','b','a'|];
       let _ = input_list |> Odash.forEachRight(each_func) |> assert_equal(input_list);
       assert_equal(array_to_mutate, expected_mutated_array)
+    },
+    "eachRight aliases forEachRight" >:: () => {
+      let for_each_input_list = ['a','b','c','d'];
+      let for_each_array_to_mutate = [|'b','b','b','b'|];
+      let for_each_func = (_, idx, item) => {
+        let _ = Array.set(for_each_array_to_mutate, idx, item);
+        true;
+      };
+
+      let each_input_list = ['a','b','c','d'];
+      let each_array_to_mutate = [|'b','b','b','b'|];
+      let each_func = (_, idx, item) => {
+        let _ = Array.set(each_array_to_mutate, idx, item);
+        true;
+      };
+
+      let _ = for_each_input_list |> Odash.forEachRight(for_each_func) |> assert_equal(for_each_input_list);
+      let _ = each_input_list |> Odash.eachRight(each_func) |> assert_equal(each_input_list);
+      assert_equal(for_each_array_to_mutate, each_array_to_mutate)
     },
     "identity returns its argument" >:: () => {
       let a_number = 1;

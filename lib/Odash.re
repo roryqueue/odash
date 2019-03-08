@@ -40,6 +40,8 @@ let reject: ((list('a), int, 'a) => bool, list('a)) => list('a) = (rejection_fun
 
 let flatten = List.flatten;
 
+let concat = flatten;
+
 let flatMap: ((list('a), int, 'a) => list('b), list('a)) => list('b) =
   (map_func, starting_list) => starting_list |> map(map_func) |> flatten;
 
@@ -67,11 +69,15 @@ let forEach: ((list('a), int, 'a) => bool, list('a)) => list('a) =
     };
   };
 
+let each = forEach;
+
 let forEachRight: ((list('a), int, 'a) => bool, list('a)) => list('a) =
   (each_func, starting_list) => {
     let _reversed_list = starting_list |> List.rev |> forEach(each_func);
     starting_list;
   };
+
+let eachRight = forEachRight;
 
 let dropWhile: ((list('a), int, 'a) => bool, list('a)) => list('a) =
   (while_func, starting_list) => {
