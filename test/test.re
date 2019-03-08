@@ -80,6 +80,54 @@ let suite =
       let map_func = (_, idx, item) => [idx, item];
       input_list |> Odash.flatMap(map_func) |> assert_equal(input_list);
     },
+    "forEach runs a function for its side effect then returns the initial list unchanged" >:: () => {
+      let input_list = ['a','b','c','d'];
+      let array_to_mutate = [|'b','b','b','b'|];
+      let each_func = (_, idx, item) => {
+        let _ = Array.set(array_to_mutate, idx, item);
+        true;
+      };
+      let expected_mutated_array = [|'a','b','c','d'|];
+      let _ = input_list |> Odash.forEach(each_func) |> assert_equal(input_list);
+      assert_equal(array_to_mutate, expected_mutated_array)
+    },
+    "forEach exits early if the each_func returns false" >:: () => {
+      let input_list = ['a','b','c','d'];
+      let array_to_mutate = [|'b','b','b','b'|];
+      let each_func = (_, idx, item) => {
+        if (item == 'c') {
+          false;
+        } else {
+          let _ = Array.set(array_to_mutate, idx, item);
+          true;
+        }
+      };
+      let expected_mutated_array = [|'a','b','b','b'|];
+      let _ = input_list |> Odash.forEach(each_func) |> assert_equal(input_list);
+      assert_equal(array_to_mutate, expected_mutated_array)
+    },
+    "forEach can use whole list within each_func" >:: () => {
+      let input_list = ['a','b','c','d'];
+      let array_to_mutate = [|'b','b','b','b'|];
+      let each_func = (whole_list, _, _) => {
+        whole_list |> List.iteri((idx, item) => Array.set(array_to_mutate, idx, item));
+        false;
+      };
+      let expected_mutated_array = [|'a','b','c','d'|];
+      let _ = input_list |> Odash.forEach(each_func) |> assert_equal(input_list);
+      assert_equal(array_to_mutate, expected_mutated_array)
+    },
+    "forEach does nothing and returns empty list when passed an empty list" >:: () => {
+      let input_list = [];
+      let array_to_mutate = [|'b','b','b','b'|];
+      let each_func = (_, idx, item) => {
+        let _ = Array.set(array_to_mutate, idx, item);
+        true;
+      };
+      let expected_mutated_array = [|'b','b','b','b'|];
+      let _ = input_list |> Odash.forEach(each_func) |> assert_equal(input_list);
+      assert_equal(array_to_mutate, expected_mutated_array)
+    },
     "identity returns its argument" >:: () => {
       let a_number = 1;
       let a_string = "hi";

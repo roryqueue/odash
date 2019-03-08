@@ -33,6 +33,30 @@ let flatten = List.flatten;
 let flatMap: ((list('a), int, 'a) => list('b), list('a)) => list('b) =
   (map_func, starting_list) => starting_list |> map(map_func) |> flatten;
 
+let forEach: ((list('a), int, 'a) => bool, list('a)) => list('a) =
+  (each_func, starting_list) => {
+    switch (starting_list) {
+      | [] => [];
+      | [first_item, ...rest_of_list] => {
+        let rec internal_rec_func: (list('a), int, 'a) => unit =
+          (rest_of_list, idx, internal_first_item) => {
+            if (!each_func(starting_list, idx, internal_first_item)) {
+              ();
+            } else {
+              switch (rest_of_list) {
+                | [] => ();
+                | [next_item, ...list_dropping_one] => {
+                      internal_rec_func(list_dropping_one, idx + 1, next_item);
+                  }
+              }
+            }
+          };
+        let _unit = internal_rec_func(rest_of_list, 0, first_item);
+        starting_list;
+      };
+    };
+  };
+
 let dropWhile: ((list('a), int, 'a) => bool, list('a)) => list('a) =
   (while_func, starting_list) => {
     switch (starting_list) {
