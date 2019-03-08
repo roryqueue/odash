@@ -28,6 +28,16 @@ let map: ((list('a), int, 'a) => 'b, list('a)) => list('b) =
   (map_func, starting_list) =>
     starting_list |> reduce((l, idx, item, acc) => [map_func(l, idx, item), ...acc], []) |> List.rev;
 
+let filter: ((list('a), int, 'a) => bool, list('a)) => list('a) = (filter_func, starting_list) =>
+    starting_list
+    |> reduce((l, idx, item, acc) => {
+        filter_func(l, idx, item) ? [item, ...acc] : acc;
+      }, [])
+    |> List.rev;
+
+let reject: ((list('a), int, 'a) => bool, list('a)) => list('a) = (rejection_func, starting_list) =>
+  starting_list |> filter((l, idx, item) => !rejection_func(l, idx, item));
+
 let flatten = List.flatten;
 
 let flatMap: ((list('a), int, 'a) => list('b), list('a)) => list('b) =

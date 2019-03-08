@@ -60,6 +60,50 @@ let suite =
       let map_func = (_, idx, item) => idx + item;
       input_list |> Odash.map(map_func) |> assert_equal(input_list);
     },
+    "filter filters items from a list that return false for filter_func" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let filter_func = (_, _, i) => (i mod 2) == 0;
+      let expected_output = [0,2,4,6,8,10];
+      input_list |> Odash.filter(filter_func) |> assert_equal(expected_output);
+    },
+    "filter returns an empty list if filter func always returns false" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let filter_func = (_, _, _) => false;
+      let expected_output = [];
+      input_list |> Odash.filter(filter_func) |> assert_equal(expected_output);
+    },
+    "filter returns input list if filter func always returns true" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let filter_func = (_, _, _) => true;
+      input_list |> Odash.filter(filter_func) |> assert_equal(input_list);
+    },
+    "filter returns an empty input list unchanged" >:: () => {
+      let input_list = [];
+      let filter_func = (_, _, _) => false;
+      input_list |> Odash.filter(filter_func) |> assert_equal(input_list);
+    },
+    "reject rejects items from a list that return true for reject_func" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let reject_func = (_, _, i) => (i mod 2) == 0;
+      let expected_output = [1,3,5,7,9,11];
+      input_list |> Odash.reject(reject_func) |> assert_equal(expected_output);
+    },
+    "reject returns an empty list if reject func always returns true" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let reject_func = (_, _, _) => true;
+      let expected_output = [];
+      input_list |> Odash.reject(reject_func) |> assert_equal(expected_output);
+    },
+    "reject returns input list if reject func always returns false" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let reject_func = (_, _, _) => false;
+      input_list |> Odash.reject(reject_func) |> assert_equal(input_list);
+    },
+    "reject returns an empty input list unchanged" >:: () => {
+      let input_list = [];
+      let reject_func = (_, _, _) => true;
+      input_list |> Odash.reject(reject_func) |> assert_equal(input_list);
+    },
     "flatten flattens a list of lists (by one level of depth)" >:: () => {
       let input_list = [[0,1],[2],[3],[4,5],[6,7,8,9],[10,11]];
       let expected_output = [0,1,2,3,4,5,6,7,8,9,10,11];
