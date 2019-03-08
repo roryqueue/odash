@@ -653,6 +653,13 @@ let suite =
       let sample = Odash.sample(input_list)
       input_list |> Odash.includes(sample) |> assert_equal(true);
     },
+    "shuffle returns a random shuffle of the input_list" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
+      let shuffled_list = input_list |> Odash.shuffle;
+      let _length_assertion = shuffled_list |> List.length |> assert_equal(List.length(input_list));
+      let all_include = (i) => Odash.includes(i, input_list) |> assert_equal(true)
+      let _inclusion_assertion = shuffled_list |> List.map(all_include);
+    },
     "size returns list length" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
       let expected_output = 12;
