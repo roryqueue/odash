@@ -1,4 +1,3 @@
-exception Invalid(string);
 exception Impossible(string);
 
 type sortOrder = Asc | Desc;
@@ -37,6 +36,18 @@ let filter: ((list('a), int, 'a) => bool, list('a)) => list('a) = (filter_func, 
 
 let reject: ((list('a), int, 'a) => bool, list('a)) => list('a) = (rejection_func, starting_list) =>
   starting_list |> filter((l, idx, item) => !rejection_func(l, idx, item));
+
+let head = List.hd;
+
+let first = head;
+
+let last: list('a) => 'a = list => list |> List.rev |> head;
+
+let nth: (int, list('a)) => 'a = (selected_idx, input_list) => List.nth(input_list, selected_idx);
+
+let tail = List.tl;
+
+let initial: list('a) => list('a) = list => list |> List.rev |> tail |> List.rev;
 
 let flatten = List.flatten;
 
@@ -171,7 +182,7 @@ let slice: (int, int, list('a)) => list('a) =
 let chunk: (int, list('a)) => list(list('a)) =
   (chunk_size, starting_list) => {
     if (chunk_size < 1) {
-      raise(Invalid("chunk_size must be a positive integer!"));
+      raise(Invalid_argument("chunk_size must be a positive integer!"));
     } else {
       let evenly_split_remainder = List.length(starting_list) mod chunk_size;
       let last_chunk_length = (evenly_split_remainder === 0) ? chunk_size : evenly_split_remainder;
@@ -379,9 +390,9 @@ let sampleSize: (int, list('a)) => list('a) =
 
 let sample: list('a) => 'a = input_list => {
     if (List.length(input_list) < 1) {
-      raise(Invalid("input_list cannot be empty!"));
+      raise(Invalid_argument("input_list cannot be empty!"));
     };
-    input_list |> sampleSize(1) |> List.hd;
+    input_list |> sampleSize(1) |> head;
   };
 
 let shuffle: list('a) => list('a) = input_list => input_list |> sampleSize(List.length(input_list));

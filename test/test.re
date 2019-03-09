@@ -104,6 +104,36 @@ let suite =
       let reject_func = (_, _, _) => true;
       input_list |> Odash.reject(reject_func) |> assert_equal(input_list);
     },
+    "head returns the list head" >:: () => {
+      let input_list = [4,5,6,7,8,9];
+      let expected_output = 4;
+      input_list |> Odash.head |> assert_equal(expected_output);
+    },
+    "first aliases head" >:: () => {
+      let input_list = [4,5,6,7,8,9];
+      input_list |> Odash.first |> assert_equal(Odash.head(input_list));
+    },
+    "last returns the last element in the input_list" >:: () => {
+      let input_list = [4,5,6,7,8,9];
+      let expected_output = 9;
+      input_list |> Odash.last |> assert_equal(expected_output);
+    },
+    "nth returns the nth element in the input_list" >:: () => {
+      let input_list = [4,5,6,7,8,9];
+      let selected_index = 3;
+      let expected_output = 7;
+      input_list |> Odash.nth(selected_index) |> assert_equal(expected_output);
+    },
+    "tail returns the list tail" >:: () => {
+      let input_list = [4,5,6,7,8,9];
+      let expected_output = [5,6,7,8,9];
+      input_list |> Odash.tail |> assert_equal(expected_output);
+    },
+    "initial returns the list excluding the last element" >:: () => {
+      let input_list = [4,5,6,7,8,9];
+      let expected_output = [4,5,6,7,8];
+      input_list |> Odash.initial |> assert_equal(expected_output);
+    },
     "flatten flattens a list of lists (by one level of depth)" >:: () => {
       let input_list = [[0,1],[2],[3],[4,5],[6,7,8,9],[10,11]];
       let expected_output = [0,1,2,3,4,5,6,7,8,9,10,11];
