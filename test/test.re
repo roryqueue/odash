@@ -849,7 +849,7 @@ let suite =
       let expected_output = "ReillySammyAbbyGus";
       input_list |> Odash.join(join_string) |> assert_equal(expected_output);
     },
-    "uniqWith returns list filtered by uniqueness, as definited the comparison func" >:: () => {
+    "uniqWith returns list filtered by uniqueness, as defined the comparison func" >:: () => {
       let starting_list = [0.0, 1.0, 1.1, 2.2, 3.3, 3.0, 4.4];
       let uniq_with_func = (earlier_item, later_item) => earlier_item == floor(later_item);
       let expected_output = [0.0, 1.0, 2.2, 3.3, 3.0, 4.4];
@@ -890,6 +890,63 @@ let suite =
     "uniq returns empty list if passed an empty list" >:: () => {
       let starting_list = [];
       starting_list |> Odash.uniq |> assert_equal(starting_list);
+    },
+    "intersectionWith returns list filtered by intersection with other lists, as defined the comparison func" >:: () => {
+      let first_list = [0.0, 1.0, 1.1, 2.2, 3.3, 4.0, 0.0];
+      let second_list = [0.0, 1.1, 2.2, 2.2, 1.1, 4.3];
+      let third_list = [0.0, 1.9, 2.2, 2.2, 3.0, 4.4];
+      let list_of_lists = [first_list, second_list, third_list];
+      let intersection_with_func = (earlier_item, later_item) => earlier_item == floor(later_item);
+      let expected_output = [0.0, 1.0, 4.0, 0.0];
+      list_of_lists |> Odash.intersectionWith(intersection_with_func) |> assert_equal(expected_output);
+    },
+    "intersectionWith returns first list as-is if comparison func always returns false" >:: () => {
+      let first_list = [0.0, 1.0, 1.1, 2.2, 3.3, 4.0, 0.0];
+      let second_list = [0.0, 1.1, 2.2, 2.2, 1.1, 4.3];
+      let third_list = [0.0, 1.9, 2.2, 2.2, 3.0, 4.4];
+      let list_of_lists = [first_list, second_list, third_list];
+      let intersection_with_func = (_, _) => true;
+      list_of_lists |> Odash.intersectionWith(intersection_with_func) |> assert_equal(first_list);
+    },
+    "intersectionWith returns an empty list if comparison func always returns false" >:: () => {
+      let first_list = [0.0, 1.0, 1.1, 2.2, 3.3, 4.0, 0.0];
+      let second_list = [0.0, 1.1, 2.2, 2.2, 1.1, 4.3];
+      let third_list = [0.0, 1.9, 2.2, 2.2, 3.0, 4.4];
+      let list_of_lists = [first_list, second_list, third_list];
+      let intersection_with_func = (_, _) => false;
+      let expected_output = [];
+      list_of_lists |> Odash.intersectionWith(intersection_with_func) |> assert_equal(expected_output);
+    },
+    "intersectionWith returns empty list if passed an empty list" >:: () => {
+      let list_of_lists = [];
+      let intersection_with_func = (_, _) => true;
+      list_of_lists |> Odash.intersectionWith(intersection_with_func) |> assert_equal(list_of_lists);
+    },
+    "intersectionBy returns first list filtered by elements present in other lists, after each item is passed through transform_func" >:: () => {
+      let first_list = [0.0, 1.0, 1.1, 2.2, 3.3, 4.0, 0.0];
+      let second_list = [0.0, 1.1, 2.2, 2.2, 1.1, 4.3];
+      let third_list = [0.0, 1.9, 2.2, 2.2, 3.0, 4.4];
+      let list_of_lists = [first_list, second_list, third_list];
+      let intersection_by_func = item => floor(item);
+      let expected_output = [0.0, 1.0, 1.1, 2.2, 4.0, 0.0];
+      list_of_lists |> Odash.intersectionBy(intersection_by_func) |> assert_equal(expected_output);
+    },
+    "intersectionBy returns empty list if passed an empty list" >:: () => {
+      let list_of_lists = [];
+      let intersection_by_func = _ => true;
+      list_of_lists |> Odash.intersectionBy(intersection_by_func) |> assert_equal(list_of_lists);
+    },
+    "intersection returns first list filtered by elements present in other lists, after each item is passed through transform_func" >:: () => {
+      let first_list = [0.0, 1.0, 1.1, 2.2, 3.3, 4.0, 0.0];
+      let second_list = [0.0, 1.1, 2.2, 2.2, 1.1, 4.3];
+      let third_list = [0.0, 1.9, 2.2, 2.2, 3.0, 4.4];
+      let list_of_lists = [first_list, second_list, third_list];
+      let expected_output = [0.0, 2.2, 0.0];
+      list_of_lists |> Odash.intersection |> assert_equal(expected_output);
+    },
+    "intersection returns empty list if passed an empty list" >:: () => {
+      let list_of_lists = [];
+      list_of_lists |> Odash.intersection |> assert_equal(list_of_lists);
     },
 ];
 

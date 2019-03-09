@@ -490,3 +490,22 @@ let uniqBy: ('a => 'b, list('a)) => list('a) = (transform_func, starting_list) =
   starting_list |> uniqWith((earlier_item, later_item) => transform_func(earlier_item) == transform_func(later_item));
 
 let uniq: list('a) => list('a) = starting_list => starting_list |> uniqBy(identity);
+
+let intersectionWith: (('a, 'a) => bool, list(list('a))) => list('a) =
+  (compare_func, list_of_lists) => {
+    switch (list_of_lists) {
+      | [] => [];
+      | [first_list, ...other_lists] => {
+          first_list |> filter((_, _, first_list_item) => {
+            other_lists |> every((_, _, other_list) => {
+              other_list |> some((_, _, other_list_item) => compare_func(first_list_item, other_list_item));
+            });
+          });
+        };
+    };
+  };
+
+let intersectionBy: ('a => 'b, list(list('a))) => list('a) = (transform_func, list_of_lists) =>
+  list_of_lists |> intersectionWith((earlier_item, later_item) => transform_func(earlier_item) == transform_func(later_item));
+
+let intersection:  list(list('a)) => list('a) = list_of_lists => list_of_lists |> intersectionBy(identity);
