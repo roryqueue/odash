@@ -8,6 +8,14 @@ type dog = {
 
 let suite =
   "Odash" >::: [
+    "identity returns its argument" >:: () => {
+      let a_number = 1;
+      let a_string = "hi";
+      let a_list = [1,4];
+      a_number |> Odash.identity |> assert_equal(a_number);
+      a_string |> Odash.identity |> assert_equal(a_string);
+      a_list |> Odash.identity |> assert_equal(a_list);
+    },
     "reduce applies a function to each member of a list and an accumulator" >:: () => {
       let input_list = [1,2,3,4];
       let fold_func = (_, _, i, acc) => i + acc;
@@ -254,14 +262,6 @@ let suite =
       let _ = for_each_input_list |> Odash.forEachRight(for_each_func) |> assert_equal(for_each_input_list);
       let _ = each_input_list |> Odash.eachRight(each_func) |> assert_equal(each_input_list);
       assert_equal(for_each_array_to_mutate, each_array_to_mutate)
-    },
-    "identity returns its argument" >:: () => {
-      let a_number = 1;
-      let a_string = "hi";
-      let a_list = [1,4];
-      a_number |> Odash.identity |> assert_equal(a_number);
-      a_string |> Odash.identity |> assert_equal(a_string);
-      a_list |> Odash.identity |> assert_equal(a_list);
     },
     "chunk splits evenly divisible list into list of lists" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
@@ -645,6 +645,34 @@ let suite =
       let expected_output = false;
       input_list |> Odash.every(every_func) |> assert_equal(expected_output);
     },
+    "includesBy returns true if includes_func is met in list once" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,11];
+      let element = 10;
+      let includes_func = (arr_item, compare_item) => arr_item > compare_item;
+      let expected_output = true;
+      input_list |> Odash.includesBy(includes_func, element) |> assert_equal(expected_output);
+    },
+    "includesBy returns true if includes_func is always true" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9,11];
+      let element = 10;
+      let includes_func = (_, _) => true;
+      let expected_output = true;
+      input_list |> Odash.includesBy(includes_func, element) |> assert_equal(expected_output);
+    },
+    "includesBy returns false if includes_func is never met in list" >:: () => {
+      let input_list = [0,1,2,3,4,5,6,7,8,9];
+      let element = 10;
+      let includes_func = (arr_item, compare_item) => arr_item > compare_item;
+      let expected_output = false;
+      input_list |> Odash.includesBy(includes_func, element) |> assert_equal(expected_output);
+    },
+    "includesBy returns false for empty list" >:: () => {
+      let input_list = [];
+      let element = 3;
+      let includes_func = (_, _) => true;
+      let expected_output = false;
+      input_list |> Odash.includesBy(includes_func, element) |> assert_equal(expected_output);
+    },
     "includes returns true if element is in list once" >:: () => {
       let input_list = [0,1,2,3,4,5,6,7,8,9,10,11];
       let element = 3;
@@ -807,22 +835,61 @@ let suite =
       let input_list = ["Reilly", "Sammy", "Abby", "Gus"];
       let join_string = "<and>";
       let expected_output = "Reilly<and>Sammy<and>Abby<and>Gus";
-      let _ = input_list |> Odash.join(join_string) |> print_string;
       input_list |> Odash.join(join_string) |> assert_equal(expected_output);
     },
     "join returns an empty string for an empty list" >:: () => {
       let input_list = [];
       let join_string = "<and>";
       let expected_output = "";
-      let _ = input_list |> Odash.join(join_string) |> print_string;
       input_list |> Odash.join(join_string) |> assert_equal(expected_output);
     },
     "join can return list joined by an empty string" >:: () => {
       let input_list = ["Reilly", "Sammy", "Abby", "Gus"];
       let join_string = "";
       let expected_output = "ReillySammyAbbyGus";
-      let _ = input_list |> Odash.join(join_string) |> print_string;
       input_list |> Odash.join(join_string) |> assert_equal(expected_output);
+    },
+    "uniqWith returns list filtered by uniqueness, as definited the comparison func" >:: () => {
+      let starting_list = [0.0, 1.0, 1.1, 2.2, 3.3, 3.0, 4.4];
+      let uniq_with_func = (earlier_item, later_item) => earlier_item == floor(later_item);
+      let expected_output = [0.0, 1.0, 2.2, 3.3, 3.0, 4.4];
+      starting_list |> Odash.uniqWith(uniq_with_func) |> assert_equal(expected_output);
+    },
+    "uniqWith returns first list as-is if comparison func always returns false" >:: () => {
+      let starting_list = [0.0, 1.0, 1.1, 2.2, 3.3, 3.0, 4.4];
+      let uniq_with_func = (_, _) => false;
+      starting_list |> Odash.uniqWith(uniq_with_func) |> assert_equal(starting_list);
+    },
+    "uniqWith returns list with only first item if comparison func always returns true" >:: () => {
+      let starting_list = [0.0, 1.0, 1.1, 2.2, 3.3, 3.0, 4.4];
+      let uniq_with_func = (_, _) => true;
+      let expected_output = [0.0];
+      starting_list |> Odash.uniqWith(uniq_with_func) |> assert_equal(expected_output);
+    },
+    "uniqWith returns empty list if passed an empty list" >:: () => {
+      let starting_list = [];
+      let uniq_with_func = (_, _) => true;
+      starting_list |> Odash.uniqWith(uniq_with_func) |> assert_equal(starting_list);
+    },
+    "uniqBy returns list filtered by uniqueness, after each item is passed through transform_func" >:: () => {
+      let starting_list = [0.0, 1.0, 1.1, 2.2, 3.3, 3.0, 4.4];
+      let uniq_by_func = i => floor(i);
+      let expected_output = [0.0, 1.0, 2.2, 3.3, 4.4];
+      starting_list |> Odash.uniqBy(uniq_by_func) |> assert_equal(expected_output);
+    },
+    "uniqBy returns empty list if passed an empty list" >:: () => {
+      let starting_list = [];
+      let uniq_by_func = _ => true;
+      starting_list |> Odash.uniqBy(uniq_by_func) |> assert_equal(starting_list);
+    },
+    "uniq returns list filtered by uniqueness" >:: () => {
+      let starting_list = [0.0, 1.0, 1.1, 2.2, 3.3, 1.1, 3.0, 3.0, 4.4, 0.0];
+      let expected_output = [0.0, 1.0, 1.1, 2.2, 3.3, 3.0, 4.4];
+      starting_list |> Odash.uniq |> assert_equal(expected_output);
+    },
+    "uniq returns empty list if passed an empty list" >:: () => {
+      let starting_list = [];
+      starting_list |> Odash.uniq |> assert_equal(starting_list);
     },
 ];
 

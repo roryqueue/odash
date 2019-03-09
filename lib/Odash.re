@@ -323,13 +323,19 @@ let every: ((list('a), int, 'a) => bool, list('a)) => bool =
   (every_func, starting_list) =>
     starting_list |> reduce((l, idx, item, acc) => every_func(l, idx, item) ? acc : false, true);
 
-let includes: ('a, list('a)) => bool =
-  (element, starting_list) => {
-    let includes_func = (_, _, i) => i == element
-    switch(starting_list |> find(includes_func)) {
+let includesBy: (('a, 'b) => bool, 'a, list('a)) => bool =
+  (comparison_func, searched_item, starting_list) => {
+    let find_func = (_, _, array_item) => comparison_func(array_item, searched_item);
+    switch(starting_list |> find(find_func)) {
       | Some(_) => true;
       | None => false;
     };
+  };
+
+let includes: ('a, list('a)) => bool =
+  (searched_item, starting_list) => {
+    let items_are_same = (array_item, searched_item) => array_item == searched_item;
+    starting_list |> includesBy(items_are_same, searched_item);
   };
 
 let partition: ('a => bool, list('a)) => (list('a), list('a)) =
@@ -470,3 +476,17 @@ let orderBy: (list('a => int), list(sortOrder), list('a)) => list('a) =
 
 let join: (string, list(string)) => string = (join_str, starting_list) =>
   starting_list |> reduce((_, _, item, acc) => String.length(acc) > 0 ? (acc ++ join_str ++ item) : item, "");
+
+let uniqWith: (('a, 'a) => bool, list('a)) => list('a) =
+  (compare_func, starting_list) => {
+    starting_list
+    |> reduce((_, _, item, acc) => {
+      acc |> includesBy(compare_func, item) ? acc : [item, ...acc];
+    }, [])
+    |> List.rev;
+  };
+
+let uniqBy: ('a => 'b, list('a)) => list('a) = (transform_func, starting_list) =>
+  starting_list |> uniqWith((earlier_item, later_item) => transform_func(earlier_item) == transform_func(later_item));
+
+let uniq: list('a) => list('a) = starting_list => starting_list |> uniqBy(identity);
