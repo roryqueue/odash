@@ -803,6 +803,27 @@ let suite =
       let expected_exception = "input_list cannot be empty!";
       Odash.sample(input_list) |> assert_raises(expected_exception);
     }, */
+    "join joins all elements of a list of strings using supplied join string" >:: () => {
+      let input_list = ["Reilly", "Sammy", "Abby", "Gus"];
+      let join_string = "<and>";
+      let expected_output = "Reilly<and>Sammy<and>Abby<and>Gus";
+      let _ = input_list |> Odash.join(join_string) |> print_string;
+      input_list |> Odash.join(join_string) |> assert_equal(expected_output);
+    },
+    "join returns an empty string for an empty list" >:: () => {
+      let input_list = [];
+      let join_string = "<and>";
+      let expected_output = "";
+      let _ = input_list |> Odash.join(join_string) |> print_string;
+      input_list |> Odash.join(join_string) |> assert_equal(expected_output);
+    },
+    "join can return list joined by an empty string" >:: () => {
+      let input_list = ["Reilly", "Sammy", "Abby", "Gus"];
+      let join_string = "";
+      let expected_output = "ReillySammyAbbyGus";
+      let _ = input_list |> Odash.join(join_string) |> print_string;
+      input_list |> Odash.join(join_string) |> assert_equal(expected_output);
+    },
 ];
 
 run_test_tt_main(suite);

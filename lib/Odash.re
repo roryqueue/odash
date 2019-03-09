@@ -467,3 +467,6 @@ let orderBy: (list('a => int), list(sortOrder), list('a)) => list('a) =
       };
     };
   };
+
+let join: (string, list(string)) => string = (join_str, starting_list) =>
+  starting_list |> reduce((_, _, item, acc) => String.length(acc) > 0 ? (acc ++ join_str ++ item) : item, "");
