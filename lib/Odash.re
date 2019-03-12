@@ -519,9 +519,9 @@ let xorWith: (('a, 'a) => bool, list(list('a))) => list('a) =
 
     let find_difference: (list(list('a)), list('a)) => list('a) = (other_lists, focused_list) => {
       focused_list |> reject((_, _, first_list_item) => {
-        (other_lists |> some((_, _, other_list) => {
+        other_lists |> some((_, _, other_list) => {
           other_list |> some((_, _, other_list_item) => compare_func(first_list_item, other_list_item));
-        }));
+        });
       });
     };
 
@@ -549,5 +549,13 @@ let xorBy: ('a => 'b, list(list('a))) => list('a) = (transform_func, list_of_lis
 
 let xor: list(list('a)) => list('a) = list_of_lists => list_of_lists |> xorBy(identity);
 
+let unionWith: (('a, 'a) => bool, list(list('a))) => list('a) = (compare_func, list_of_lists) =>
+  list_of_lists |> flatten |> uniqWith(compare_func);
+
+let unionBy: ('a => 'b, list(list('a))) => list('a) = (transform_func, list_of_lists) =>
+  list_of_lists |> unionWith((earlier_item, later_item) => transform_func(earlier_item) == transform_func(later_item));
+
+let union: list(list('a)) => list('a) = list_of_lists => list_of_lists |> unionBy(identity);
+ 
 let without: (list('a), list('a)) => list('a) = (exclusion_list, starting_list) =>
   starting_list |> filter((_, _, item) => !(exclusion_list |> includes(item)))
