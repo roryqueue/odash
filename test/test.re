@@ -900,7 +900,7 @@ let suite =
       let expected_output = [0.0, 1.0, 4.0, 0.0];
       list_of_lists |> Odash.intersectionWith(intersection_with_func) |> assert_equal(expected_output);
     },
-    "intersectionWith returns first list as-is if comparison func always returns false" >:: () => {
+    "intersectionWith returns first list as-is if comparison func always returns true" >:: () => {
       let first_list = [0.0, 1.0, 1.1, 2.2, 3.3, 4.0, 0.0];
       let second_list = [0.0, 1.1, 2.2, 2.2, 1.1, 4.3];
       let third_list = [0.0, 1.9, 2.2, 2.2, 3.0, 4.4];
@@ -947,6 +947,79 @@ let suite =
     "intersection returns empty list if passed an empty list" >:: () => {
       let list_of_lists = [];
       list_of_lists |> Odash.intersection |> assert_equal(list_of_lists);
+    },
+    "xorWith returns unique items only on one of provided lists, ordered by position within and between lists, as defined the comparison func" >:: () => {
+      let first_list = [0.1, 0.0, 1.9, 3.5];
+      let second_list = [0.3, 1.0, 2.2];
+      let third_list = [4.0, 2.0];
+      let list_of_lists = [first_list, second_list, third_list];
+      let xor_with_func = (list_item, other_list_item) => floor(list_item) == other_list_item;
+      let expected_output = [0.1, 3.5, 0.3, 1.0, 4.0, 2.0];
+      list_of_lists |> Odash.xorWith(xor_with_func) |> assert_equal(expected_output);
+    },
+    "xorWith returns flattened lists if comparison func always returns false" >:: () => {
+      let first_list = [0.0, 1.0, 1.1, 2.2, 3.3, 4.0, 0.0];
+      let second_list = [0.0, 1.1, 2.2, 2.2, 1.1, 4.3];
+      let third_list = [0.0, 1.9, 2.2, 2.2, 3.0, 4.4];
+      let list_of_lists = [first_list, second_list, third_list];
+      let xor_with_func = (_, _) => false;
+      list_of_lists |> Odash.xorWith(xor_with_func) |> assert_equal(Odash.concat(list_of_lists));
+    },
+    "xorWith returns an empty list if comparison func always returns true" >:: () => {
+      let first_list = [0.0, 1.0, 1.1, 2.2, 3.3, 4.0, 0.0];
+      let second_list = [0.0, 1.1, 2.2, 2.2, 1.1, 4.3];
+      let third_list = [0.0, 1.9, 2.2, 2.2, 3.0, 4.4];
+      let list_of_lists = [first_list, second_list, third_list];
+      let xor_with_func = (_, _) => true;
+      let expected_output = [];
+      list_of_lists |> Odash.xorWith(xor_with_func) |> assert_equal(expected_output);
+    },
+    "xorWith returns empty list if passed an empty list" >:: () => {
+      let list_of_lists = [];
+      let xor_with_func = (_, _) => true;
+      list_of_lists |> Odash.xorWith(xor_with_func) |> assert_equal(list_of_lists);
+    },
+    "xorBy returns first list filtered by elements present in other lists, after each item is passed through transform_func" >:: () => {
+      let first_list = [0.1, 0.0, 1.9, 3.5];
+      let second_list = [0.3, 1.0, 2.2];
+      let third_list = [4.0, 2.0];
+      let list_of_lists = [first_list, second_list, third_list];
+      let xor_by_func = item => floor(item);
+      let expected_output = [3.5, 4.0];
+      list_of_lists |> Odash.xorBy(xor_by_func) |> assert_equal(expected_output);
+    },
+    "xorBy returns empty list if passed an empty list" >:: () => {
+      let list_of_lists = [];
+      let xor_by_func = _ => true;
+      list_of_lists |> Odash.xorBy(xor_by_func) |> assert_equal(list_of_lists);
+    },
+    "xor returns first list filtered by elements present in other lists, after each item is passed through transform_func" >:: () => {
+      let first_list = [0, 0, 5, 1, 3, 6];
+      let second_list = [1, 6, 2];
+      let third_list = [6, 4, 2, 5, 6];
+      let list_of_lists = [first_list, second_list, third_list];
+      let expected_output = [0, 3, 4];
+      list_of_lists |> Odash.xor |> assert_equal(expected_output);
+    },
+    "xor returns empty list if passed an empty list" >:: () => {
+      let list_of_lists = [];
+      list_of_lists |> Odash.xor |> assert_equal(list_of_lists);
+    },
+    "without returns input list excluding all items on the exclusion list" >:: () => {
+      let input_list = [0,1,9,7,4,9,5];
+      let exclusion_list = [7,9,7,2,8,1];
+      let expected_output = [0,4,5];
+      input_list |> Odash.without(exclusion_list) |> assert_equal(expected_output);
+    },
+    "without returns input list as-is if exclusion list is empty" >:: () => {
+      let input_list = [0,1,9,7,4,9,5];
+      let exclusion_list = [];
+      input_list |> Odash.without(exclusion_list) |> assert_equal(input_list);
+    },
+    "without returns an empty list if passed an empty input list" >:: () => {
+      let input_list = [];
+      let exclusion_list = [7,9,7,2,8,1];
+      input_list |> Odash.without(exclusion_list) |> assert_equal(input_list);
     },
 ];
 

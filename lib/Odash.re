@@ -508,4 +508,46 @@ let intersectionWith: (('a, 'a) => bool, list(list('a))) => list('a) =
 let intersectionBy: ('a => 'b, list(list('a))) => list('a) = (transform_func, list_of_lists) =>
   list_of_lists |> intersectionWith((earlier_item, later_item) => transform_func(earlier_item) == transform_func(later_item));
 
-let intersection:  list(list('a)) => list('a) = list_of_lists => list_of_lists |> intersectionBy(identity);
+let intersection: list(list('a)) => list('a) = list_of_lists => list_of_lists |> intersectionBy(identity);
+
+let xorWith: (('a, 'a) => bool, list(list('a))) => list('a) =
+  (compare_func, list_of_lists) => {
+    
+    let list_of_sets = list_of_lists |> List.map(uniqWith(compare_func));
+
+    let exclude_index = (index_to_exclude, starting_list) => starting_list |> reject((_, idx, _) => idx == index_to_exclude);
+
+    let find_difference: (list(list('a)), list('a)) => list('a) = (other_lists, focused_list) => {
+      focused_list |> reject((_, _, first_list_item) => {
+        (other_lists |> some((_, _, other_list) => {
+          other_list |> some((_, _, other_list_item) => compare_func(first_list_item, other_list_item));
+        }));
+      });
+    };
+
+    let rec internal_xor_with: (int, list(list('a)), list('a), list(list('a))) => list('a) =
+      (index, difference_lists, current_set, remaining_sets) => {
+        let noncurrent_sets = list_of_sets |> exclude_index(index);
+        let current_difference_list = current_set |> find_difference(noncurrent_sets);
+        let updated_difference_lists = [current_difference_list, ...difference_lists];
+        switch (remaining_sets) {
+          | [] => updated_difference_lists |> List.rev |> flatten |> uniqWith(compare_func);
+          | [next_set, ...new_remaining_sets] =>
+            internal_xor_with(index + 1, updated_difference_lists, next_set, new_remaining_sets);
+        };
+      };
+
+    switch (list_of_sets) {
+      | [] => [];
+      | [first_set, ...other_sets] => internal_xor_with(0, [], first_set, other_sets);
+    };
+  };
+
+
+let xorBy: ('a => 'b, list(list('a))) => list('a) = (transform_func, list_of_lists) =>
+  list_of_lists |> xorWith((earlier_item, later_item) => transform_func(earlier_item) == transform_func(later_item));
+
+let xor: list(list('a)) => list('a) = list_of_lists => list_of_lists |> xorBy(identity);
+
+let without: (list('a), list('a)) => list('a) = (exclusion_list, starting_list) =>
+  starting_list |> filter((_, _, item) => !(exclusion_list |> includes(item)))
