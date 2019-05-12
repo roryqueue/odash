@@ -325,7 +325,7 @@ let every: ((list('a), int, 'a) => bool, list('a)) => bool =
 
 let includesBy: (('a, 'b) => bool, 'a, list('a)) => bool =
   (comparison_func, searched_item, starting_list) => {
-    let find_func = (_, _, array_item) => comparison_func(array_item, searched_item);
+    let find_func = (_, _, list_item) => comparison_func(list_item, searched_item);
     switch(starting_list |> find(find_func)) {
       | Some(_) => true;
       | None => false;
@@ -334,7 +334,7 @@ let includesBy: (('a, 'b) => bool, 'a, list('a)) => bool =
 
 let includes: ('a, list('a)) => bool =
   (searched_item, starting_list) => {
-    let items_are_same = (array_item, searched_item) => array_item == searched_item;
+    let items_are_same = (list_item, searched_item) => list_item == searched_item;
     starting_list |> includesBy(items_are_same, searched_item);
   };
 
@@ -558,4 +558,32 @@ let unionBy: ('a => 'b, list(list('a))) => list('a) = (transform_func, list_of_l
 let union: list(list('a)) => list('a) = list_of_lists => list_of_lists |> unionBy(identity);
  
 let without: (list('a), list('a)) => list('a) = (exclusion_list, starting_list) =>
-  starting_list |> filter((_, _, item) => !(exclusion_list |> includes(item)))
+  starting_list |> filter((_, _, item) => !(exclusion_list |> includes(item)));
+
+let zip: list(list('a)) => list(list('a)) = lists_to_zip => {
+  switch (lists_to_zip) {
+    | [] => [];
+    | [first_list, ...other_lists] => {
+      let first_list_length = List.length(first_list);
+      let lists_are_equal_size = other_lists |> every((_, _, list) => List.length(list) == first_list_length);
+
+      if (lists_are_equal_size) {
+        let rec create_empty_lists: (list(list('a)), int) => list(list('a)) = (skeleton, idx) =>
+          (idx >= first_list_length) ? skeleton : create_empty_lists([[], ...skeleton], idx + 1);
+
+        lists_to_zip
+        |> List.fold_left(
+          (current_zipped_lists, next_list) =>
+            List.map2((item, zipped_list) => [item, ...zipped_list], next_list, current_zipped_lists),
+          create_empty_lists([], 0)
+        )
+        |> List.map(List.rev);
+
+      } else {
+        raise(Invalid_argument("lists_to_zip must all be of equal size!"));
+      };
+    };
+  };
+};
+
+let unzip = zip;

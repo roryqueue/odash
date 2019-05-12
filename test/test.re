@@ -478,7 +478,7 @@ let suite =
       let expected_output = [3,-7];
       starting_list |> Odash.differenceBy(comparison_func, comparison_list) |> assert_equal(expected_output);
     },
-    "fill fills in an array with the provided value" >:: () => {
+    "fill fills in a list with the provided value" >:: () => {
       let starting_list = ['a','b','c','d','e'];
       let fill_character = 'f';
       let expected_output = ['f','f','f','f','f'];
@@ -491,21 +491,21 @@ let suite =
       let expected_output = ['a','b','f','f','f'];
       starting_list |> Odash.fill(~start_index=start_idx, fill_character) |> assert_equal(expected_output);
     },
-    "fill replaces all array values if start index is zero" >:: () => {
+    "fill replaces all list values if start index is zero" >:: () => {
       let starting_list = ['a','b','c','d','e'];
       let fill_character = 'f';
       let start_idx = 0;
       let expected_output = ['f','f','f','f','f'];
       starting_list |> Odash.fill(~start_index=start_idx, fill_character) |> assert_equal(expected_output);
     },
-    "fill replaces all array values if start index is negative" >:: () => {
+    "fill replaces all list values if start index is negative" >:: () => {
       let starting_list = ['a','b','c','d','e'];
       let fill_character = 'f';
       let start_idx = -100;
       let expected_output = ['f','f','f','f','f'];
       starting_list |> Odash.fill(~start_index=start_idx, fill_character) |> assert_equal(expected_output);
     },
-    "fill doesn't replace any array values if start index is greater than or equal to list size" >:: () => {
+    "fill doesn't replace any list values if start index is greater than or equal to list size" >:: () => {
       let starting_list = ['a','b','c','d','e'];
       let fill_character = 'f';
       let start_idx = 5;
@@ -518,19 +518,19 @@ let suite =
       let expected_output = ['f','f','c','d','e'];
       starting_list |> Odash.fill(~end_index=end_idx, fill_character) |> assert_equal(expected_output);
     },
-    "fill doesn't replace any array values if end index is zero" >:: () => {
+    "fill doesn't replace any list values if end index is zero" >:: () => {
       let starting_list = ['a','b','c','d','e'];
       let fill_character = 'f';
       let end_idx = 0;
       starting_list |> Odash.fill(~end_index=end_idx, fill_character) |> assert_equal(starting_list);
     },
-    "fill doesn't replace any array values if end index is negative" >:: () => {
+    "fill doesn't replace any list values if end index is negative" >:: () => {
       let starting_list = ['a','b','c','d','e'];
       let fill_character = 'f';
       let end_idx = -100;
       starting_list |> Odash.fill(~end_index=end_idx, fill_character) |> assert_equal(starting_list);
     },
-    "fill replaces all array values if end index is greater than list size" >:: () => {
+    "fill replaces all list values if end index is greater than list size" >:: () => {
       let starting_list = ['a','b','c','d','e'];
       let fill_character = 'f';
       let end_idx = 6;
@@ -1079,6 +1079,32 @@ let suite =
       let input_list = [];
       let exclusion_list = [7,9,7,2,8,1];
       input_list |> Odash.without(exclusion_list) |> assert_equal(input_list);
+    },
+    "zip zips a list of two lists into a list of two-element lists" >:: () => {
+      let initial_lists = [[0,2,4,6,8,10],[1,3,5,7,9,11]];
+      let expected_output = [[0,1],[2,3],[4,5],[6,7],[8,9],[10,11]]
+      initial_lists |> Odash.zip |> assert_equal(expected_output);
+    },
+    "zip zips many two-element lists into a list of two lists" >:: () => {
+      let initial_lists = [[0,1],[2,3],[4,5],[6,7],[8,9],[10,11]]
+      let expected_output = [[0,2,4,6,8,10],[1,3,5,7,9,11]];
+      initial_lists |> Odash.zip |> assert_equal(expected_output);
+    },
+    "zip returns an empty list when passed an empty list" >:: () => {
+      let empty_list = [];
+      empty_list |> Odash.zip |> assert_equal(empty_list);
+    },
+    "unzip zips treats list of two lists exactly like zip" >:: () => {
+      let initial_lists = [[0,2,4,6,8,10],[1,3,5,7,9,11]];
+      initial_lists |> Odash.unzip |> assert_equal(Odash.zip(initial_lists));
+    },
+    "unzip treats many two-element lists exactly like zip" >:: () => {
+      let initial_lists = [[0,1],[2,3],[4,5],[6,7],[8,9],[10,11]]
+      initial_lists |> Odash.unzip |> assert_equal(Odash.zip(initial_lists));
+    },
+    "unzip treats an empty list exactly like zip" >:: () => {
+      let empty_list = [];
+      empty_list |> Odash.unzip |> assert_equal(Odash.zip(empty_list));
     },
 ];
 
