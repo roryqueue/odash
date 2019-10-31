@@ -1,3 +1,5 @@
 .merlin
 _build
 log
+_opam
+node_modules
