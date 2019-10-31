@@ -474,7 +474,7 @@ let suite =
     "differenceBy returns items in first list not in second, matching by comparison_func" >:: () => {
       let starting_list = [-1,3,-4,-7];
       let comparison_list = [1,-2,-4];
-      let comparison_func = n => Pervasives.abs(n)
+      let comparison_func = n => abs(n)
       let expected_output = [3,-7];
       starting_list |> Odash.differenceBy(comparison_func, comparison_list) |> assert_equal(expected_output);
     },
