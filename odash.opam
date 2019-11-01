@@ -5,6 +5,7 @@ license: "MIT"
 homepage: "https://github.com/roryqueue/odash"
 bug-reports: "https://github.com/roryqueue/odash/issues"
 dev-repo: "git://github.com/roryqueue/odash.git"
+doc: "https://roryqueue.github.io/odash/"
 tags: [ "syntax" ]
 build: [
   ["dune" "build" "-p" name "-j" jobs]
