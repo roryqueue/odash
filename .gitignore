@@ -3,3 +3,4 @@ _build
 log
 _opam
 node_modules
+*.install
