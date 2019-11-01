@@ -4,7 +4,7 @@ authors: [ "Rory Quinlan <rjamesquinlan@gmail.com>" ]
 license: "MIT"
 homepage: "https://github.com/roryqueue/odash"
 bug-reports: "https://github.com/roryqueue/odash/issues"
-dev-repo: "git://github.com/roryqueue/odash.git"
+dev-repo: "https://github.com/roryqueue/odash.git"
 doc: "https://roryqueue.github.io/odash/"
 tags: [ "syntax" ]
 build: [
